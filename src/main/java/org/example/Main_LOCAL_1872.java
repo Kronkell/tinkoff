@@ -1,6 +1,5 @@
 package org.example;
 
-<<<<<<< HEAD
 //// Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 //// then press Enter. You can now see whitespace characters in your code.
 //public class Main {
@@ -18,14 +17,3 @@ package org.example;
 //        }
 //    }
 //}
-=======
-// Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
-// then press Enter. You can now see whitespace characters in your code.
-public class Main {
-    private Main() {
-    }
-
-    public static void main(String[] args) {
-    }
-}
->>>>>>> e72d93fe631084bffddfbad2de400c9bae1c31c2
