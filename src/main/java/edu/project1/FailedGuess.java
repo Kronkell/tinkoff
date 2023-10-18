@@ -1,6 +1,5 @@
 package edu.project1;
 
-import java.util.Arrays;
 import org.jetbrains.annotations.NotNull;
 
 public record FailedGuess(char[] oldState, int attempt, int maxAttempts) implements GuessResult {

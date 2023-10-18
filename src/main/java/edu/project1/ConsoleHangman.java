@@ -9,12 +9,15 @@ import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+@SuppressWarnings("MemberName")
 public class ConsoleHangman {
     private final Logger LOGGER = LogManager.getLogger();
     private final int FIRST = 0;
     private final int MAX_ATTEMPTS = 5;
     private final char[] DEFAULT_STATE = "*****".toCharArray();
-    private final List<String> consoleCommands = List.of("concede", "hint");
+    private final String HINT = "hint";
+    private final String CONCEDE = "concede";
+    private final List<String> consoleCommands = List.of(CONCEDE, HINT);
     private boolean isFinished = false;
 
     public void run() {
@@ -61,13 +64,14 @@ public class ConsoleHangman {
     }
 
     private GuessResult executeConsoleCommand(Session session, String command) {
-        if (Objects.equals(command, "hint")) {
+        if (Objects.equals(command, HINT)) {
             return session.giveHint();
         } else {
             return session.giveUp();
         }
     }
 
+    @SuppressWarnings("MagicNumber")
     private void printState(GuessResult guess) {
         switch (guess) {
             case SuccessfulGuess ignored -> LOGGER.info(guess.message());
@@ -92,6 +96,8 @@ public class ConsoleHangman {
                     case 5:
                         LOGGER.trace(guess.message());
                         break;
+                    default:
+                        break;
                 }
             }
             case Win ignored -> LOGGER.debug(guess.message());
@@ -104,6 +110,7 @@ public class ConsoleHangman {
         }
     }
 
+    @SuppressWarnings("MagicNumber")
     public void printHangStages(int stageIndex) {
         String[] stages = {
             "  +---+\n  |   |\n  O   |\n  |   |\n      |\n      |\n=========",
@@ -131,6 +138,8 @@ public class ConsoleHangman {
                 break;
             case 4:
                 LOGGER.trace(stages[stageIndex]);
+                break;
+            default:
                 break;
 
         }

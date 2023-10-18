@@ -6,11 +6,13 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings("MemberName")
 public class Session {
+    private final int MAX_SIZE = 1000;
     private final char ASTERISK = '*';
     private final String answer;
     private final int maxAttempts;
-    private char[] userAnswer = new char[1000];
+    private char[] userAnswer = new char[MAX_SIZE];
     private int attempts = 0;
     private int failedAttempts = 0;
 
@@ -89,7 +91,10 @@ public class Session {
         return currentState;
     }
 
-    public int getFailedAttempts() { return failedAttempts; }
+    public int getFailedAttempts() {
+        return failedAttempts;
+    }
+
     public boolean isFinished() {
         return isFinished;
     }

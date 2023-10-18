@@ -2,6 +2,7 @@ package edu.project1;
 
 import org.apache.logging.log4j.Logger;
 
+@SuppressWarnings("MemberName")
 public class ConsoleTemplates {
     private final Logger LOGGER;
 

@@ -8,7 +8,7 @@ public record SuccessfulGuess(char[] oldState, char newLetter, List<Integer> ind
     @Override
     public char[] state() {
         char[] newState = Arrays.copyOf(oldState, oldState.length);
-        for(Integer letter : indices) {
+        for (Integer letter : indices) {
             newState[letter] = newLetter;
         }
         return newState;
