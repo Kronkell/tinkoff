@@ -2,7 +2,7 @@ package edu.project1;
 
 import org.jetbrains.annotations.NotNull;
 
-sealed interface GuessResult permits Defeat, FailedGuess, SuccessfulGuess, Win {
+sealed interface GuessResult permits Defeat, FailedGuess, SuccessfulGuess, Win, WrongInput {
     char[] state();
 
     int attempt();

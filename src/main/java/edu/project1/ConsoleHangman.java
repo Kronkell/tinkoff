@@ -45,7 +45,7 @@ public class ConsoleHangman {
         }
     }
 
-    private GuessResult tryGuess(Session session, String input) {
+    protected GuessResult tryGuess(Session session, String input) {
         GuessResult guessResult;
         if (input == null) {
             guessResult = executeConsoleCommand(session, consoleCommands.get(0));
@@ -54,8 +54,7 @@ public class ConsoleHangman {
         } else if (input.length() == 1 && input.charAt(FIRST) >= 'a' && input.charAt(FIRST) <= 'z') {
             guessResult = session.guess(input.charAt(FIRST));
         } else {
-            LOGGER.fatal("Wrong input! Try again.");
-            guessResult = null;
+            guessResult = new WrongInput();
         }
 
         return guessResult;
@@ -100,6 +99,7 @@ public class ConsoleHangman {
                 printHangStages(4);
                 LOGGER.trace(guess.additionalMessage());
             }
+            case WrongInput ignored -> LOGGER.fatal(guess.message());
             default -> throw new IllegalStateException("Unexpected value: " + guess);
         }
     }
