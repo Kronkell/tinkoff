@@ -2,6 +2,7 @@ package edu.hw2.task3;
 
 import org.apache.logging.log4j.Logger;
 
+@SuppressWarnings("MemberName")
 public class DefaultConnectionManager implements ConnectionManager {
     private final Logger LOGGER;
 

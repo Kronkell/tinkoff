@@ -3,6 +3,7 @@ package edu.hw2.task3;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+@SuppressWarnings({"MemberName", "MultipleStringLiterals"})
 public final class PopularCommandExecutor {
     private final Logger LOGGER = LogManager.getLogger();
     private final ConnectionManager manager;
@@ -23,12 +24,17 @@ public final class PopularCommandExecutor {
         while (countOfAttempts < maxAttempts) {
             try {
                 countOfAttempts++;
-                manager.getConnection(countOfAttempts).execute(command, countOfAttempts);
+                var connection = manager.getConnection(countOfAttempts);
+                connection.execute(command, countOfAttempts);
+                connection.close();
+                break;
             } catch (ConnectionException e) {
                 LOGGER.info("Caught exception: " + e.getMessage());
                 if (countOfAttempts == maxAttempts) {
                     throw new ConnectionException("Reached maximum number of attempts!", e);
                 }
+            } catch (Exception exp) {
+                LOGGER.info("Caught exception: " + exp.getMessage());
             }
         }
 
