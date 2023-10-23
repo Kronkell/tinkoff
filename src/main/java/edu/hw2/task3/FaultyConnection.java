@@ -6,17 +6,20 @@ import org.apache.logging.log4j.Logger;
 public class FaultyConnection implements Connection {
     private final Logger LOGGER;
 
-    public FaultyConnection(Logger logger) {
+    private int seed;
+
+    public FaultyConnection(Logger logger, int seed) {
         LOGGER = logger;
+        this.seed = seed;
     }
 
     @SuppressWarnings("MultipleStringLiterals")
     @Override
-    public void execute(String command, int seed) {
-        if (seed % 2 == 1) {
+    public void execute(String command) {
+        if (seed % 2 == 0) {
             throw new ConnectionException("ConnectionException: Execution failed!");
         } else {
-            LOGGER.info("Executing " + this.getClass().getSimpleName() + "...");
+            LOGGER.info("Executing " + command + "...");
         }
     }
 

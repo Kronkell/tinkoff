@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 @SuppressWarnings("MemberName")
 public class DefaultConnectionManager implements ConnectionManager {
     private final Logger LOGGER;
+    private final int THREE = 3;
 
     public DefaultConnectionManager(Logger logger) {
         LOGGER = logger;
@@ -12,8 +13,8 @@ public class DefaultConnectionManager implements ConnectionManager {
 
     @Override
     public Connection getConnection(int seed) {
-        if (seed % 2 == 0) {
-            return new FaultyConnection(LOGGER);
+        if (seed % THREE == 0) {
+            return new FaultyConnection(LOGGER, seed);
         } else {
             return new StableConnection(LOGGER);
         }

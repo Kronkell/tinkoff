@@ -47,10 +47,14 @@ public class Task3Test {
         PopularCommandExecutor executor = new PopularCommandExecutor(new DefaultConnectionManager(logger), 5);
         executor.updatePackages();
 
-        assertThat("Executing apt update && apt upgrade -y...")
+        assertThat("Closing FaultyConnection...")
             .isEqualTo(mockedAppender.message.get(0));
-        assertThat("Closing StableConnection...")
+        assertThat("Caught ConnectionException: ConnectionException: Execution failed!")
             .isEqualTo(mockedAppender.message.get(1));
+        assertThat("Executing apt update && apt upgrade -y...")
+            .isEqualTo(mockedAppender.message.get(2));
+        assertThat("Closing StableConnection...")
+            .isEqualTo(mockedAppender.message.get(3));
         logger.removeAppender(mockedAppender);
         teardown();
     }
@@ -61,12 +65,14 @@ public class Task3Test {
         PopularCommandExecutor executor = new PopularCommandExecutor(new FaultyConnectionManager(logger), 5);
         executor.updatePackages();
 
-        assertThat("Caught exception: ConnectionException: Execution failed!")
-            .isEqualTo(mockedAppender.message.get(0));
-        assertThat("Executing FaultyConnection...")
-            .isEqualTo(mockedAppender.message.get(1));
         assertThat("Closing FaultyConnection...")
+            .isEqualTo(mockedAppender.message.get(0));
+        assertThat("Caught ConnectionException: ConnectionException: Execution failed!")
+            .isEqualTo(mockedAppender.message.get(1));
+        assertThat("Executing apt update && apt upgrade -y...")
             .isEqualTo(mockedAppender.message.get(2));
+        assertThat("Closing FaultyConnection...")
+            .isEqualTo(mockedAppender.message.get(3));
         logger.removeAppender(mockedAppender);
         teardown();
     }

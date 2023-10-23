@@ -12,6 +12,6 @@ public class FaultyConnectionManager implements ConnectionManager {
 
     @Override
     public Connection getConnection(int seed) {
-        return new FaultyConnection(LOGGER);
+        return new FaultyConnection(LOGGER, seed);
     }
 }

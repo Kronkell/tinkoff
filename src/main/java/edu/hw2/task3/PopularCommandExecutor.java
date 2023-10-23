@@ -22,14 +22,12 @@ public final class PopularCommandExecutor {
         int countOfAttempts = 0;
 
         while (countOfAttempts < maxAttempts) {
-            try {
+            try (Connection connection = manager.getConnection(countOfAttempts)) {
                 countOfAttempts++;
-                var connection = manager.getConnection(countOfAttempts);
-                connection.execute(command, countOfAttempts);
-                connection.close();
+                connection.execute(command);
                 break;
             } catch (ConnectionException e) {
-                LOGGER.info("Caught exception: " + e.getMessage());
+                LOGGER.info("Caught ConnectionException: " + e.getMessage());
                 if (countOfAttempts == maxAttempts) {
                     throw new ConnectionException("Reached maximum number of attempts!", e);
                 }
@@ -37,6 +35,5 @@ public final class PopularCommandExecutor {
                 LOGGER.info("Caught exception: " + exp.getMessage());
             }
         }
-
     }
 }

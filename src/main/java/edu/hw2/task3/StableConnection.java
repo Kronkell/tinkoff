@@ -11,7 +11,7 @@ public class StableConnection implements Connection {
     }
 
     @Override
-    public void execute(String command, int seed) {
+    public void execute(String command) {
         LOGGER.info("Executing " + command + "...");
     }
 

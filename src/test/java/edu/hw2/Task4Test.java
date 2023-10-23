@@ -6,18 +6,14 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class Task4Test {
     @Test
-    public void shouldReturnTask4TestGivenThisClass() {
-        String expectedInfo = "edu.hw2.Task4Test";
+    public void shouldReturnCallingInfoGivenClassAndMethod() {
+        Task4.CallingInfo expectedInfo = new Task4.CallingInfo(
+            "edu.hw2.Task4Test",
+            "shouldReturnCallingInfoGivenClassAndMethod"
+        );
+
         var callInfo = Task4.callingInfo();
 
-        assertThat(callInfo.className()).isEqualTo(expectedInfo);
-    }
-
-    @Test
-    public void shouldReturnMethodNameGivenThisMethod() {
-        String expectedInfo = "shouldReturnMethodNameGivenThisMethod";
-        var callInfo = Task4.callingInfo();
-
-        assertThat(callInfo.methodName()).isEqualTo(expectedInfo);
+        assertThat(callInfo).isEqualTo(expectedInfo);
     }
 }
