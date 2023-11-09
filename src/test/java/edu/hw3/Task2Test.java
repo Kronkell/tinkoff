@@ -8,6 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.provider.CsvSource;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -32,9 +33,12 @@ public class Task2Test {
         assertThat(actualOutput).isEqualTo(expectedOutput);
     }
 
-    @Test
-    void shouldThrowExceptionGivenUnbalancedInput() {
-        String input = "(()))()()()())()()()";
+    @ParameterizedTest
+    @CsvSource(
+        {"(()))()()()())()()()",
+            ")(()()"}
+    )
+    void shouldThrowExceptionGivenUnbalancedInput(String input) {
 
         assertThrows(IllegalArgumentException.class, () -> Task2.clusterize(input));
     }

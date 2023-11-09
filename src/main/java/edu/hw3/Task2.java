@@ -7,6 +7,7 @@ public class Task2 {
     private Task2() {
     }
 
+    @SuppressWarnings("MultipleStringLiterals")
     public static List<String> clusterize(String braces) {
         List<String> answer = new ArrayList<>();
         int balance = 0;
@@ -16,6 +17,10 @@ public class Task2 {
                 balance++;
             } else if (braces.charAt(i) == ')') {
                 balance--;
+
+            }
+            if (balance < 0) {
+                throw new IllegalArgumentException("Input is not balanced!");
             }
 
             if (balance == 0) {

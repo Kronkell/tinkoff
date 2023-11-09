@@ -27,7 +27,9 @@ public class Task6 {
 
         @Override
         public void remove(Stock stock) {
-            stockPriorityQueue.remove(stock);
+            if (!stockPriorityQueue.isEmpty()) {
+                stockPriorityQueue.remove(stock);
+            }
         }
 
         @Override

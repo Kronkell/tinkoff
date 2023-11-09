@@ -1,6 +1,5 @@
 package edu.hw3;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -9,50 +8,57 @@ public class Task5 {
     private Task5() {
     }
 
-    public static List<Contact> parseContacts(List<String> names, String type) {
-        List<Contact> contacts = new ArrayList<>();
-        List<String> contact;
-
+    public static List<Contact> parseContactsWithStreams(List<String> names, String type) {
         if (names == null) {
-            return contacts;
+            return List.of();
         }
 
-        for (var name : names) {
-            contact = List.of(name.split(" "));
+        Comparator<Contact> comparator = (o1, o2) -> {
+            if (Objects.equals(o1.getSurname(), null)) {
+                if (Objects.equals(o2.getSurname(), null)) {
+                    return o1.getName().compareTo(o2.getName());
+                } else {
+                    return o1.getName().compareTo(o2.getSurname());
+                }
+            } else if (Objects.equals(o2.getSurname(), null)) {
+                return o1.getSurname().compareTo(o2.getName());
+            } else {
+                return o1.getSurname().compareTo(o2.getSurname());
+            }
+        };
+
+        if (type.equals("ASC")) {
+            return names.stream().map(Contact::new).sorted(comparator).toList();
+        } else if (type.equals("DESC")) {
+            return names.stream().map(Contact::new).sorted(comparator.reversed()).toList();
+        } else {
+            throw new IllegalArgumentException("Wrong sorting type!");
+        }
+    }
+
+    public static final class Contact {
+        private final String name;
+        private final String surname;
+
+        public Contact(String input) {
+            var contact = List.of(input.split(" "));
             if (contact.size() == 1) {
-                contacts.add(new Contact(contact.get(0), ""));
+                name = contact.get(0);
+                surname = null;
             } else if (contact.size() == 2) {
-                contacts.add(new Contact(contact.get(0), contact.get(1)));
+                name = contact.get(0);
+                surname = contact.get(1);
             } else {
                 throw new IllegalArgumentException("Wrong name!");
             }
         }
 
-        Comparator<Contact> comparator = (o1, o2) -> {
-            if (Objects.equals(o1.surname, "")) {
-                if (Objects.equals(o2.surname, "")) {
-                    return o1.name.compareTo(o2.name);
-                } else {
-                    return o1.name.compareTo(o2.surname);
-                }
-            } else if (Objects.equals(o2.surname, "")) {
-                return o1.surname.compareTo(o2.name);
-            } else {
-                return o1.surname.compareTo(o2.surname);
-            }
-        };
-
-        if (type.equals("ASC")) {
-            contacts.sort(comparator);
-        } else if (type.equals("DESC")) {
-            contacts.sort((comparator.reversed()));
-        } else {
-            throw new IllegalArgumentException("Wrong sorting type!");
+        public String getName() {
+            return name;
         }
 
-        return contacts;
-    }
-
-    public record Contact(String name, String surname) {
+        public String getSurname() {
+            return surname;
+        }
     }
 }

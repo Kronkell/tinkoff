@@ -7,7 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import static edu.hw3.Task5.parseContacts;
+import static edu.hw3.Task5.parseContactsWithStreams;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class Task5Test {
@@ -19,43 +19,43 @@ public class Task5Test {
                     List.of("John Locke", "Thomas Aquinas", "David Hume", "Rene Descartes"),
                     "ASC",
                     List.of(
-                        new Task5.Contact("Thomas", "Aquinas"),
-                        new Task5.Contact("Rene", "Descartes"),
-                        new Task5.Contact("David", "Hume"),
-                        new Task5.Contact("John", "Locke")
+                        new Task5.Contact("Thomas Aquinas"),
+                        new Task5.Contact("Rene Descartes"),
+                        new Task5.Contact("David Hume"),
+                        new Task5.Contact("John Locke")
                     )
                 ),
                 Arguments.of(
                     List.of("Paul Erdos", "Leonhard Euler", "Carl Gauss"),
                     "DESC",
                     List.of(
-                        new Task5.Contact("Carl", "Gauss"),
-                        new Task5.Contact("Leonhard", "Euler"),
-                        new Task5.Contact("Paul", "Erdos")
+                        new Task5.Contact("Carl Gauss"),
+                        new Task5.Contact("Leonhard Euler"),
+                        new Task5.Contact("Paul Erdos")
                     )
                 ),
                 Arguments.of(
                     List.of("Paul Erdos", "Leonhard Euler", "Carl Gauss", "Max Euwe", "Paul Morphy", "Magnus"),
                     "DESC",
                     List.of(
-                        new Task5.Contact("Paul", "Morphy"),
-                        new Task5.Contact("Magnus", ""),
-                        new Task5.Contact("Carl", "Gauss"),
-                        new Task5.Contact("Max", "Euwe"),
-                        new Task5.Contact("Leonhard", "Euler"),
-                        new Task5.Contact("Paul", "Erdos")
+                        new Task5.Contact("Paul Morphy"),
+                        new Task5.Contact("Magnus"),
+                        new Task5.Contact("Carl Gauss"),
+                        new Task5.Contact("Max Euwe"),
+                        new Task5.Contact("Leonhard Euler"),
+                        new Task5.Contact("Paul Erdos")
                     )
                 ),
                 Arguments.of(
                     List.of("A", "B", "C", "D", "E", "F"),
                     "DESC",
                     List.of(
-                        new Task5.Contact("F", ""),
-                        new Task5.Contact("E", ""),
-                        new Task5.Contact("D", ""),
-                        new Task5.Contact("C", ""),
-                        new Task5.Contact("B", ""),
-                        new Task5.Contact("A", "")
+                        new Task5.Contact("F"),
+                        new Task5.Contact("E"),
+                        new Task5.Contact("D"),
+                        new Task5.Contact("C"),
+                        new Task5.Contact("B"),
+                        new Task5.Contact("A")
                     )
                 ),
                 Arguments.of(List.of(), "DESC", List.of()),
@@ -71,9 +71,9 @@ public class Task5Test {
         String type,
         List<Task5.Contact> expectedOutput
     ) {
-        List<Task5.Contact> actualOutput = parseContacts(names, type);
+        List<Task5.Contact> actualOutput = parseContactsWithStreams(names, type);
 
-        assertThat(actualOutput).isEqualTo(expectedOutput);
+        assertThat(actualOutput).usingRecursiveComparison().isEqualTo(expectedOutput);
     }
 
 }
