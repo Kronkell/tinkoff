@@ -2,6 +2,7 @@ package edu.hw4;
 
 import java.util.AbstractMap;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -11,9 +12,9 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.summingInt;
 
-
 public class Tasks {
-    private Tasks() {}
+    private Tasks() {
+    }
 
     //1
     public static List<Animal> sortByHeight(List<Animal> animals) {
@@ -50,12 +51,9 @@ public class Tasks {
     //5
     public static Animal.Sex largestSex(List<Animal> animals) {
 
-        return animals.stream()
+        return Collections.max(animals.stream()
             .collect(groupingBy(Animal::sex, summingInt(e -> 1)))
-            .entrySet()
-            .stream()
-            .max(Map.Entry.comparingByValue())
-            .orElseThrow()
+            .entrySet(), Map.Entry.comparingByValue())
             .getKey();
     }
 
