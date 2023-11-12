@@ -266,8 +266,8 @@ public class TasksTests {
     @ArgumentsSource(AnimalsArgumentsProvider.class)
     public void readableAnimalsEntriesWithMistakesTest(List<Animal> animals) {
         var expectedOutput = Map.of(
-            "Radioactive Spider", "HEIGHT",
-            "Luna", "AGE&HEIGHT"
+            "Radioactive Spider ", "HEIGHT",
+            "Luna ", "AGE, HEIGHT"
         );
 
         assertThat(Tasks.readableAnimalsEntriesWithMistakes(animals)).isEqualTo(expectedOutput);

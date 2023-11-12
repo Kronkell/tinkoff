@@ -43,9 +43,8 @@ public class Tasks {
     public static Animal longestNamedAnimal(List<Animal> animals) {
 
         return animals.stream()
-            .sorted(Comparator.comparing(animal -> animal.name().length()))
-            .toList()
-            .getLast();
+            .max(Comparator.comparing(animal -> animal.name().length()))
+            .orElse(null);
     }
 
     //5
@@ -55,9 +54,7 @@ public class Tasks {
             .collect(groupingBy(Animal::sex, summingInt(e -> 1)))
             .entrySet()
             .stream()
-            .sorted(Map.Entry.comparingByValue())
-            .skip(1)
-            .findFirst()
+            .max(Map.Entry.comparingByValue())
             .orElseThrow()
             .getKey();
     }
@@ -208,12 +205,12 @@ public class Tasks {
             .filter(animal -> !ValidationError.isValid(animal))
             .map(animal ->
                 new AbstractMap.SimpleEntry<>(
-                    animal.name(),
+                    animal.name() + " ",
                     ValidationError.getErrors(animal).stream()
                         .map(validationError -> validationError.type().name())
                         .sorted()
-                        .reduce("", (a, b) -> String.format("%s&%s", a, b))
-                        .replaceFirst("&", "")
+                        .reduce("", (a, b) -> String.format("%s, %s", a, b))
+                        .replaceFirst(", ", "")
                 ))
             .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
     }

@@ -24,24 +24,37 @@ public record ValidationError(String info, MistakeType type) {
         var type = animal.type();
 
         return animal.weight() <= animalInfo.get(type).get(0)
-                && animal.height() <= animalInfo.get(type).get(1)
-                && animal.age() <= animalInfo.get(type).get(2);
+            && animal.height() <= animalInfo.get(type).get(1)
+            && animal.age() <= animalInfo.get(type).get(2);
     }
 
     public static Set<ValidationError> getErrors(Animal animal) {
         var type = animal.type();
         var errors = new HashSet<ValidationError>();
 
-        if (animal.weight() > animalInfo.get(type).get(0)) {
-            errors.add(new ValidationError("Weight cannot be that big!", MistakeType.WEIGHT));
-        }
-        if (animal.height() > animalInfo.get(type).get(1)) {
-            errors.add(new ValidationError("Height cannot be that big!", MistakeType.HEIGHT));
-        }
-        if (animal.age() > animalInfo.get(type).get(2)) {
-            errors.add(new ValidationError("Age cannot be that big!", MistakeType.AGE));
-        }
+        checkWeight(animal, type, errors);
+        checkHeight(animal, type, errors);
+        checkAge(animal, type, errors);
 
         return errors;
     }
+
+    private static void checkHeight(Animal animal, Animal.Type type, Set<ValidationError> errors) {
+        if (animal.height() > animalInfo.get(type).get(1)) {
+            errors.add(new ValidationError("Height cannot be that big!", MistakeType.HEIGHT));
+        }
+    }
+
+    private static void checkWeight(Animal animal, Animal.Type type, Set<ValidationError> errors) {
+        if (animal.weight() > animalInfo.get(type).get(0)) {
+            errors.add(new ValidationError("Weight cannot be that big!", MistakeType.WEIGHT));
+        }
+    }
+
+    private static void checkAge(Animal animal, Animal.Type type, Set<ValidationError> errors) {
+        if (animal.age() > animalInfo.get(type).get(2)) {
+            errors.add(new ValidationError("Age cannot be that big!", MistakeType.AGE));
+        }
+    }
+
 }
