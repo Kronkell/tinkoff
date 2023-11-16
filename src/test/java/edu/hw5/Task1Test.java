@@ -18,6 +18,10 @@ public class Task1Test {
         public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
             return Stream.of(
                 Arguments.of(
+                    List.of(),
+                    "0ч 0м"
+                ),
+                Arguments.of(
                     List.of(
                         "2022-03-12, 20:20 - 2022-03-12, 23:50",
                         "2022-04-01, 21:30 - 2022-04-02, 01:20"

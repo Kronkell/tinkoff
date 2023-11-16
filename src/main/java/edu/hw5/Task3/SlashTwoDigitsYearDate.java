@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
-public class SlashTwoDigitsYearDate extends Middleware {
+public class SlashTwoDigitsYearDate extends ChainParser {
     @Override
     public Optional<LocalDate> check(String date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yy");

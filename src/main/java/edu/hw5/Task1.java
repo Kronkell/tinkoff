@@ -22,7 +22,12 @@ public class Task1 {
             sumOfAllMinutes += Duration.between(startTime, finishTime).toMinutes();
         }
 
-        long averageMinutesPerSession = sumOfAllMinutes / timeBounds.size();
+        long averageMinutesPerSession;
+        if (timeBounds.isEmpty()) {
+            averageMinutesPerSession = 0;
+        } else {
+            averageMinutesPerSession = sumOfAllMinutes / timeBounds.size();
+        }
 
         return String.format(
             "%dч %dм",

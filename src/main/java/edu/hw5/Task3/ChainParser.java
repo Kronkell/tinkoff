@@ -3,12 +3,12 @@ package edu.hw5.Task3;
 import java.time.LocalDate;
 import java.util.Optional;
 
-public abstract class Middleware {
-    private Middleware next;
+public abstract class ChainParser {
+    private ChainParser next;
 
-    public static Middleware link(Middleware first, Middleware... chain) {
-        Middleware head = first;
-        for (Middleware nextInChain : chain) {
+    public static ChainParser link(ChainParser first, ChainParser... chain) {
+        ChainParser head = first;
+        for (ChainParser nextInChain : chain) {
             head.next = nextInChain;
             head = nextInChain;
         }

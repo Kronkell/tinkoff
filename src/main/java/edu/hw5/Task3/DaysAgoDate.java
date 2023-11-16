@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class DaysAgoDate extends Middleware {
+public class DaysAgoDate extends ChainParser {
     @Override
     public Optional<LocalDate> check(String date) {
         LocalDate now = LocalDate.now();

@@ -3,7 +3,7 @@ package edu.hw5.Task3;
 import java.time.LocalDate;
 import java.util.Optional;
 
-public class OneWordDate extends Middleware {
+public class OneWordDate extends ChainParser {
     @Override
     public Optional<LocalDate> check(String date) {
         LocalDate now = LocalDate.now();

@@ -8,7 +8,7 @@ public class Task3 {
     }
 
     public static Optional<LocalDate> parseDate(String date) {
-        Middleware middleware = Middleware.link(
+        ChainParser chain = ChainParser.link(
             new DashDate(),
             new SlashFourDigitsYearDate(),
             new SlashTwoDigitsYearDate(),
@@ -16,6 +16,6 @@ public class Task3 {
             new DaysAgoDate()
         );
 
-        return middleware.check(date);
+        return chain.check(date);
     }
 }

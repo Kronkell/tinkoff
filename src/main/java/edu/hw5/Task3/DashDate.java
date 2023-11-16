@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
-public class DashDate extends Middleware {
+public class DashDate extends ChainParser {
     @Override
     public Optional<LocalDate> check(String date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-d");
