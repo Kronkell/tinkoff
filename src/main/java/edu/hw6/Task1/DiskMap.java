@@ -1,16 +1,11 @@
 package edu.hw6.Task1;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import org.jetbrains.annotations.NotNull;
@@ -25,6 +20,8 @@ public class DiskMap implements Map<String, String> {
         if (!Files.exists(PATH)) {
             Files.createFile(PATH);
             size = 0;
+        } else {
+            size = Files.readAllLines(PATH).size();
         }
     }
 
@@ -40,6 +37,9 @@ public class DiskMap implements Map<String, String> {
 
     @Override
     public boolean containsKey(Object key) {
+        if (key == null) {
+            throw new IllegalArgumentException();
+        }
         try (BufferedReader bufferedReader = Files.newBufferedReader(PATH)) {
             String entry;
             String currentKey;
@@ -52,7 +52,7 @@ public class DiskMap implements Map<String, String> {
                 }
 
                 currentKey = keyValPair[0];
-                if (key != null && key.equals(currentKey)) {
+                if (key.equals(currentKey)) {
                     return true;
                 }
             }
@@ -64,6 +64,9 @@ public class DiskMap implements Map<String, String> {
 
     @Override
     public boolean containsValue(Object value) {
+        if (value == null) {
+            throw new IllegalArgumentException();
+        }
         try (BufferedReader bufferedReader = Files.newBufferedReader(PATH)) {
             String entry;
             String currentValue;
@@ -76,7 +79,7 @@ public class DiskMap implements Map<String, String> {
                 }
 
                 currentValue = keyValPair[1];
-                if (value != null && value.equals(currentValue)) {
+                if (value.equals(currentValue)) {
                     return true;
                 }
             }
@@ -88,6 +91,9 @@ public class DiskMap implements Map<String, String> {
 
     @Override
     public String get(Object key) {
+        if (key == null) {
+            throw new IllegalArgumentException();
+        }
         if (this.containsKey(key)) {
             try (BufferedReader bufferedReader = Files.newBufferedReader(PATH)) {
                 String entry;
@@ -118,61 +124,100 @@ public class DiskMap implements Map<String, String> {
     @Nullable
     @Override
     public String put(String key, String value) {
-        try (BufferedReader bufferedReader = Files.newBufferedReader(PATH);
-             BufferedWriter bufferedWriter = Files.newBufferedWriter(PATH);
-             RandomAccessFile randomAccessFile = new RandomAccessFile(PATH.toFile(), "rw")) {
-            String entry;
+        if (key == null || key.isEmpty() || value == null || value.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+        try (RandomAccessFile file = new RandomAccessFile(PATH.toFile(), "rw")) {
+            String currentLine;
             String currentKey;
+            String currentValue;
             String[] keyValPair;
-            while (bufferedReader.ready()) {
-                entry = bufferedReader.readLine();
-                keyValPair = entry.split(":");
+            while ((currentLine = file.readLine()) != null) {
+                keyValPair = currentLine.split(":");
                 if (keyValPair.length != 2) {
                     throw new IllegalArgumentException();
                 }
 
                 currentKey = keyValPair[0];
-                value = keyValPair[1];
+                currentValue = keyValPair[1];
                 if (key.equals(currentKey)) {
-                    return value;
+                    this.remove(currentKey);
+                    this.put(key, value);
+                    return currentValue;
                 }
             }
+
+            file.seek(file.length());
+            file.writeBytes(key + ":" + value + "\n");
+            size++;
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
+
         return null;
     }
 
     @Override
     public String remove(Object key) {
-        return null;
+        String oldValue = null;
+        try (BufferedReader reader = Files.newBufferedReader(PATH)) {
+            String currentLine;
+            String currentKey;
+            String[] keyValPair;
+            StringBuilder fileContents = new StringBuilder();
+            while (reader.ready()) {
+                currentLine = reader.readLine();
+                keyValPair = currentLine.split(":");
+                if (keyValPair.length != 2) {
+                    throw new IllegalArgumentException();
+                }
+
+                currentKey = keyValPair[0];
+                if (!key.equals(currentKey)) {
+                    fileContents.append(currentLine).append("\n");
+                } else {
+                    oldValue = keyValPair[1];
+                    size--;
+                }
+            }
+            Files.write(PATH, fileContents.toString().getBytes());
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return oldValue;
     }
 
     @Override
     public void putAll(@NotNull Map<? extends String, ? extends String> m) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void clear() {
-
+        try {
+            Files.write(PATH, "".getBytes());
+            size = 0;
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @NotNull
     @Override
     public Set<String> keySet() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @NotNull
     @Override
     public Collection<String> values() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @NotNull
     @Override
     public Set<Entry<String, String>> entrySet() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }
