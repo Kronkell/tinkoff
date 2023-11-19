@@ -6,7 +6,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class LogParser {
-    private static final String logRegex =
+    private LogParser() {
+    }
+
+    private static final String LOG_REGEX =
         "^([^ ]*) - ([^ ]*) \\[([^\\]]*)\\] \"([^\"]*)\" ([0-9]*) ([0-9]*) \"([^\"]*)\" \"([^\"]*)\"$";
     private static final int REMOTE_ADD = 1;
     private static final int REMOTE_USER = 2;
@@ -17,9 +20,9 @@ public class LogParser {
     private static final int HTTP_REFERER = 7;
     private static final int HTTP_USER_AGENT = 8;
 
-    public static List<LogRecord> formStreamOfLogs(List<String> rawLogs) {
+    public static List<LogRecord> formListOfLogs(List<String> rawLogs) {
         ArrayList<LogRecord> logRecords = new ArrayList<>();
-        Pattern pattern = Pattern.compile(logRegex);
+        Pattern pattern = Pattern.compile(LOG_REGEX);
         for (var line : rawLogs) {
             Matcher m = pattern.matcher(line);
             while (m.find()) {
