@@ -7,6 +7,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class Task2 {
+    private Task2() {
+    }
 
     public static void cloneFile(Path path) throws IOException {
         long countOfClones;

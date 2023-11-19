@@ -9,12 +9,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.zip.CRC32;
 import java.util.zip.CheckedOutputStream;
-import java.util.zip.Checksum;
 
+@SuppressWarnings("UncommentedMain")
 public class Task4 {
+    private Task4() {
+    }
+
     public static void main(String[] args) {
         streamsComposition();
     }
+
     public static void streamsComposition() {
         try (PrintWriter writer =
                  new PrintWriter(

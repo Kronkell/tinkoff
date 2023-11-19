@@ -3,10 +3,10 @@ package edu.hw6;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
-import java.util.HashMap;
 import java.util.Map;
 import static java.util.Map.entry;
 
+@SuppressWarnings({"UncommentedMain", "RegexpSinglelineJava", "MagicNumber", "OperatorWrap", "LocalVariableName"})
 public class Task6 {
     private Task6() {
     }
@@ -49,14 +49,14 @@ public class Task6 {
     }
 
     public static void main(String[] args) {
-//        int MIN_PORT = 0;
-//        int MAX_PORT = 49151;
-//
-//        for (int i = MIN_PORT; i < MAX_PORT; ++i) {
-//            if (!isAvailable(i)) {
-//                System.out.println(i);
-//            }
-//        }
+        int MIN_PORT = 0;
+        int MAX_PORT = 49151;
+
+        for (int i = MIN_PORT; i < MAX_PORT; ++i) {
+            if (!isAvailable(i)) {
+                System.out.println(i);
+            }
+        }
 
         printSeveralPorts();
     }

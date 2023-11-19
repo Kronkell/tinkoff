@@ -7,7 +7,12 @@ import java.net.http.HttpResponse;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
+@SuppressWarnings({"UncommentedMain", "RegexpSinglelineJava", "MagicNumber"})
 public class HackerNews {
+    private HackerNews() {
+    }
+
+
     public static void main(String[] args) {
         System.out.println(Arrays.toString(hackerNewsTopStories()));
         String newsTitle = news(38309611);

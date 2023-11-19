@@ -11,6 +11,7 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("RegexpSinglelineJava")
 public class DiskMap implements Map<String, String> {
     private static final Path PATH = Path.of("disk-map.txt");
 
