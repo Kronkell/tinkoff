@@ -13,6 +13,5 @@ public class Task2Test {
     @Test
     public void firstCopyTest() {
         var path = Path.of("Test.txt");
-        Files.createTempFile(path, );
     }
 }
