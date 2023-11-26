@@ -7,7 +7,7 @@ public class Task4Test {
     @Test
     public void checkIfMultiThreadMonteCarloIsFaster() throws InterruptedException {
         long N = 1_000_000_000L;
-        int cores = 10;
+        int cores = 20;
         long start = System.nanoTime();
         Task4.singleThreadMonteCarlo(N);
         long singleThreadTime = System.nanoTime() - start;
