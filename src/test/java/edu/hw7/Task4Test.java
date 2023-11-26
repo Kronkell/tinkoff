@@ -6,7 +6,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 public class Task4Test {
     @Test
     public void checkIfMultiThreadMonteCarloIsFaster() throws InterruptedException {
-        long N = 100_000_000L;
+        long N = 1_000_000_000L;
         long start = System.nanoTime();
         Task4.singleThreadMonteCarlo(N);
         long singleThreadTime = System.nanoTime() - start;
