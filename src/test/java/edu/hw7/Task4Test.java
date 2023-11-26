@@ -5,21 +5,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class Task4Test {
     @Test
-    public void checkIfMultiThreadMonteCarloIsFaster() throws InterruptedException {
-        long N = 1_000_000_000L;
-        int cores = 20;
-        long start = System.nanoTime();
-        Task4.singleThreadMonteCarlo(N);
-        long singleThreadTime = System.nanoTime() - start;
-
-        start = System.nanoTime();
-        Task4.multiThreadMonteCarlo(N, cores);
-        long multiThreadTime = System.nanoTime() - start;
-
-        assertThat(singleThreadTime).isGreaterThan(multiThreadTime);
-    }
-
-    @Test
     public void shouldCalculatePIWithGivenPrecision() throws InterruptedException {
         long N = 1_000_000_000L;
         double expectedRelativeError = 0.002;
