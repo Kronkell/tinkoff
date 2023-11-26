@@ -1,0 +1,22 @@
+Avg acceleration time for 2 threads = 2.3527416s.
+Avg acceleration time for 3 threads = 4.6850622s.
+Avg acceleration time for 4 threads = 5.883938s.
+Avg acceleration time for 5 threads = 6.410101s.
+Avg acceleration time for 6 threads = 4.855235s.
+Avg acceleration time for 7 threads = 5.141970s.
+Avg acceleration time for 8 threads = 5.490903s.
+Avg acceleration time for 9 threads = 5.633669s.
+Avg acceleration time for 10 threads = 5.15246s.
+Avg acceleration time for 11 threads = 6.211525s.
+Avg acceleration time for 12 threads = 6.549763s.
+Avg acceleration time for 13 threads = 6.688628s. - maximum
+Avg acceleration time for 14 threads = 6.63669707s.
+Avg acceleration time for 15 threads = 5.5815146s.
+Avg acceleration time for 16 threads = 6.5536202s.
+Avg acceleration time for 17 threads = 6.6746723s.
+Avg acceleration time for 18 threads = 6.6386234s.
+Avg acceleration time for 19 threads = 6.5869960s.
+
+Relative error for N = 10_000_000: 0.003276%
+Relative error for N = 100_000_000: 0.00623%
+Relative error for N = 1_000_000_000: 0.0013%
