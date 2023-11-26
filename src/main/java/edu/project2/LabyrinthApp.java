@@ -1,9 +1,9 @@
 package edu.project2;
 
 import edu.project2.entity.Coordinate;
+import edu.project2.entity.DimensionPair;
 import edu.project2.entity.Maze;
 import edu.project2.generate.BinaryTreeAlgorithm;
-import edu.project2.generate.Generator;
 import edu.project2.generate.GrowingTreeAlgorithm;
 import edu.project2.print.PrettyPrintRenderer;
 import edu.project2.solve.BreadthFirstSearch;
@@ -13,6 +13,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
+import static edu.project2.StringConstants.DIMENSION_RULES;
+import static edu.project2.StringConstants.FINISH_RULES;
+import static edu.project2.StringConstants.GENERATOR_CHOICE;
+import static edu.project2.StringConstants.GREETINGS;
+import static edu.project2.StringConstants.LIST_OF_COORDS_INFO;
+import static edu.project2.StringConstants.NO_PATH_INFO;
+import static edu.project2.StringConstants.SOLVER_CHOICE;
+import static edu.project2.StringConstants.START_RULES;
 
 @SuppressWarnings({"RegexpSinglelineJava", "MagicNumber", "MultipleStringLiterals"})
 public class LabyrinthApp {
@@ -23,84 +31,106 @@ public class LabyrinthApp {
     private static final String ANSI_RESET = "\u001B[0m";
     private static final String ANSI_BLUE = "\u001B[34m";
     private static final String ANSI_PURPLE = "\u001B[35m";
+    private static final int FIRST_TYPE = 1;
+    private static final int SECOND_TYPE = 2;
+    private static final int MAX_SIZE = 500;
+    private static final int MIN_SIZE = 3;
 
     public static void run() throws IOException {
         System.out.println();
         System.out.println(ANSI_PURPLE + GREETINGS);
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
-            Maze maze;
-            Generator generator;
-            Solver solver;
+            Maze maze = generateMaze(reader);
 
-            List<Integer> dimensions = getDimensions(reader);
-            int height = dimensions.getFirst();
-            int width = dimensions.getLast();
+            PrettyPrintRenderer render = getRenderAndPrintMaze(maze);
 
-            int type = getType(reader, GENERATOR_CHOICE);
-            if (type == 2) {
-                generator = new GrowingTreeAlgorithm();
-                maze = generator.generate(height + 1, width + 1);
-            } else {
-                generator = new BinaryTreeAlgorithm();
-                maze = generator.generate(height + (1 - height % 2), width + (1 - width % 2));
-            }
+            List<Coordinate> passageCells = getAndPrintPassageCells(render, maze);
 
-            PrettyPrintRenderer render = new PrettyPrintRenderer();
-            String output = render.render(maze);
-            System.out.println(output);
-
-            System.out.println(ANSI_PURPLE + LIST_OF_COORDS_INFO + ANSI_RESET);
-            List<Coordinate> passageCells = render.getPassageCells(maze);
-            System.out.println(printPassageCells(passageCells));
-
-            Coordinate start = null;
-            Coordinate finish;
-            List<Coordinate> solution = null;
-            boolean isSolutionPresent = false;
-            while (!isSolutionPresent) {
-                start = getCoordinate(reader, "start", passageCells);
-                finish = getCoordinate(reader, "finish", passageCells);
-
-                type = getType(reader, SOLVER_CHOICE);
-                if (type == 1) {
-                    solver = new DepthFirstSearch();
-                } else {
-                    solver = new BreadthFirstSearch();
-                }
-
-                solution = solver.solve(
-                    maze,
-                    new Coordinate(
-                        start.row() + render.getIsTopBorderThick(),
-                        start.column() + render.getIsLeftBorderThick()
-                    ),
-                    new Coordinate(
-                        finish.row() + render.getIsTopBorderThick(),
-                        finish.column() + render.getIsLeftBorderThick()
-                    )
-                );
-
-                if (!solution.isEmpty()) {
-                    isSolutionPresent = true;
-                } else {
-                    System.out.println(NO_PATH_INFO);
-                }
-            }
-
-            output = render.renderWithPath(
-                maze,
-                solution,
-                new Coordinate(
-                    start.row() + render.getIsTopBorderThick(),
-                    start.column() + render.getIsLeftBorderThick()
-                )
-            );
-            System.out.println(output);
+            solveAndPrintMaze(maze, reader, passageCells, render);
         }
-
     }
 
-    private static List<Integer> getDimensions(BufferedReader reader) {
+    private static Maze generateMaze(BufferedReader reader) {
+        DimensionPair dimensions = getDimensions(reader);
+        int height = dimensions.height();
+        int width = dimensions.width();
+
+        int type = getType(reader, GENERATOR_CHOICE);
+        if (type == SECOND_TYPE) {
+            return new GrowingTreeAlgorithm().generate(height + 1, width + 1);
+        } else {
+            return new BinaryTreeAlgorithm().generate(height + (1 - height % 2), width + (1 - width % 2));
+        }
+    }
+
+    private static PrettyPrintRenderer getRenderAndPrintMaze(Maze maze) {
+        PrettyPrintRenderer render = new PrettyPrintRenderer();
+        String output = render.render(maze);
+        System.out.println(output);
+        return render;
+    }
+
+    private static List<Coordinate> getAndPrintPassageCells(PrettyPrintRenderer render, Maze maze) {
+        System.out.println(ANSI_PURPLE + LIST_OF_COORDS_INFO + ANSI_RESET);
+        List<Coordinate> passageCells = render.getPassageCells(maze);
+        System.out.println(printPassageCells(passageCells));
+        return passageCells;
+    }
+
+    private static void solveAndPrintMaze(
+        Maze maze,
+        BufferedReader reader,
+        List<Coordinate> passageCells,
+        PrettyPrintRenderer render
+    ) {
+        Coordinate start = null;
+        Coordinate finish;
+        List<Coordinate> solution = null;
+        boolean isSolutionPresent = false;
+        int topOffset = render.getIsTopBorderThick() ? 1 : 0;
+        int leftOffset = render.getIsLeftBorderThick() ? 1 : 0;
+        while (!isSolutionPresent) {
+            start = getCoordinate(reader, "start", passageCells);
+            finish = getCoordinate(reader, "finish", passageCells);
+
+            int type = getType(reader, SOLVER_CHOICE);
+            Solver solver;
+            if (type == FIRST_TYPE) {
+                solver = new DepthFirstSearch();
+            } else {
+                solver = new BreadthFirstSearch();
+            }
+
+            solution = solver.solve(
+                maze,
+                new Coordinate(
+                    start.row() + topOffset,
+                    start.column() + leftOffset
+                ),
+                new Coordinate(
+                    finish.row() + topOffset,
+                    finish.column() + leftOffset
+                )
+            );
+
+            if (!solution.isEmpty()) {
+                isSolutionPresent = true;
+            } else {
+                System.out.println(NO_PATH_INFO);
+            }
+        }
+
+        System.out.println(render.renderWithPath(
+            maze,
+            solution,
+            new Coordinate(
+                start.row() + topOffset,
+                start.column() + leftOffset
+            )
+        ));
+    }
+
+    private static DimensionPair getDimensions(BufferedReader reader) {
         int height = 0;
         int width = 0;
         String input;
@@ -115,7 +145,7 @@ public class LabyrinthApp {
             }
         } while (!areDimensionsValid(height, width));
 
-        return List.of(height, width);
+        return new DimensionPair(height, width);
     }
 
     private static Integer getType(BufferedReader reader, String message) {
@@ -129,7 +159,7 @@ public class LabyrinthApp {
             } catch (Exception e) {
                 System.out.println(ANSI_RED + "Wrong input!" + ANSI_RESET);
             }
-        } while (type != 1 && type != 2);
+        } while (type != FIRST_TYPE && type != SECOND_TYPE);
 
         return type;
     }
@@ -176,36 +206,11 @@ public class LabyrinthApp {
     }
 
     private static boolean areDimensionsValid(int height, int width) {
-        return (height >= 3 && height < 500 && width >= 3 && width < 500);
+        return (height >= MIN_SIZE && height < MAX_SIZE && width >= MIN_SIZE && width < MAX_SIZE);
     }
 
     private static boolean isCoordinateValid(int x, int y, List<Coordinate> coordinates) {
         return coordinates.contains(new Coordinate(x, y));
     }
-
-    public static final String GREETINGS = """
-        Welcome to the Labyrinth app! It can generate a maze of desired size and quickly find path between 2 points
-        if it exists.
-
-        For the best user experience, please set "Line height" setting to 1.0.
-        """;
-    public static final String DIMENSION_RULES = "Please, enter the maze dimensions, separated by space. "
-        + "Notice that the numbers must be bigger than 2 and smaller than 500";
-
-    public static final String GENERATOR_CHOICE =
-        "Please, choose the algorithm to generate a maze. Type \"1\" for Binary Tree Algorithm."
-            + " Type \"2\" for Growing Tree Algorithm";
-    public static final String LIST_OF_COORDS_INFO =
-        "Here is the list of coordinates (counting starts at 0) you can choose as Start or Finish. Choose wisely ;)";
-
-    public static final String SOLVER_CHOICE = "Please, choose the algorithm to solve the maze. "
-        + "Type \"1\" for the classic Depth-First Search. Type \"2\" for Breadth-First Search";
-    public static final String NO_PATH_INFO = "No path between the 2 cells, sadly.";
-
-    public static final String START_RULES = "Please, enter the start coordinates, separated by space. "
-        + "Notice that the coordinate must be one of the possible coordinates from the list";
-
-    public static final String FINISH_RULES = "Please, enter the finish coordinates, separated by space. "
-        + "Notice that the coordinate must be one of the possible coordinates from the list";
 
 }
