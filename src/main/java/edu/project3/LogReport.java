@@ -11,14 +11,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
+import static edu.project3.StringConsts.AVG_RESPONSE_SIZE;
+import static edu.project3.StringConsts.DASH;
+import static edu.project3.StringConsts.END_DATE;
+import static edu.project3.StringConsts.FILES;
+import static edu.project3.StringConsts.REQUEST_COUNT;
+import static edu.project3.StringConsts.START_DATE;
 
 public class LogReport {
-    private static final String FILES = "Files";
-    private static final String START_DATE = "Start date";
-    private static final String END_DATE = "End date";
-    private static final String REQUEST_COUNT = "Request count";
-    private static final String AVG_RESPONSE_SIZE = "Average response size";
-    private static final String DASH = " - ";
     private static final int MAX_OUTPUT_SIZE = 10;
 
     private final Resources resources;
@@ -200,23 +200,7 @@ public class LogReport {
         return OffsetDateTime.parse(date, dtf);
     }
 
-    public Resources getResources() {
-        return resources;
-    }
-
-    public StatusCodes getStatusCodes() {
-        return statusCodes;
-    }
-
-    public GeneralInfo getGeneralInfo() {
-        return generalInfo;
-    }
-
-    public RemoteAddresses getRemoteAddresses() {
-        return remoteAddresses;
-    }
-
-    public UserAgents getUserAgents() {
-        return userAgents;
+    public Info getInfo() {
+        return new Info(resources, statusCodes, generalInfo, remoteAddresses, userAgents);
     }
 }

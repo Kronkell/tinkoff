@@ -2,63 +2,33 @@ package edu.project3;
 
 import java.util.Comparator;
 import org.apache.commons.httpclient.HttpStatus;
+import static edu.project3.StringConsts.FIRST_COLUMN_HEADER;
+import static edu.project3.StringConsts.PIPE;
+import static edu.project3.StringConsts.PIPE_NEWLINE;
+import static edu.project3.StringConsts.REMOTE_ADDR_FIRST_COLUMN_HEADER;
+import static edu.project3.StringConsts.REMOTE_ADDR_SECOND_COLUMN_HEADER;
+import static edu.project3.StringConsts.RESOURCES_FIRST_COLUMN_HEADER;
+import static edu.project3.StringConsts.RESOURCES_SECOND_COLUMN_HEADER;
+import static edu.project3.StringConsts.SECOND_COLUMN_HEADER;
+import static edu.project3.StringConsts.STATUS_CODES_FIRST_COLUMN_HEADER;
+import static edu.project3.StringConsts.STATUS_CODES_SECOND_COLUMN_HEADER;
+import static edu.project3.StringConsts.STATUS_CODES_THIRD_COLUMN_HEADER;
+import static edu.project3.StringConsts.USER_AGENTS_FIRST_COLUMN_HEADER;
+import static edu.project3.StringConsts.USER_AGENTS_SECOND_COLUMN_HEADER;
 
 public class DefaultRenderer {
     private DefaultRenderer() {
     }
 
-    private static final String PIPE = "|";
-    private static final String PIPE_NEWLINE = "|\n";
-    private static final String COUNT = "*COUNT*";
-
     public static String renderGeneralInfo(GeneralInfo generalInfo, boolean isAdoc) {
-        final String FIRST_COLUMN_HEADER = "*METRIC*";
-        final String SECOND_COLUMN_HEADER = "*VALUE*";
-
         var sb = new StringBuilder();
-        int firstColumnWidth = generalInfo.generalInfoMap()
-            .keySet()
-            .stream()
-            .max(Comparator.comparing(String::length))
-            .orElse("")
-            .length();
 
-        int secondColumnWidth = generalInfo.generalInfoMap()
-            .values()
-            .stream()
-            .map(String::valueOf)
-            .max(Comparator.comparing(String::length))
-            .orElse("")
-            .length();
+        int firstColumnWidth = calculateFirstColumnWidth(generalInfo);
+        int secondColumnWidth = calculateValuesColumnWidth(generalInfo);
 
-        sb.append(getFormattedString(
-            FIRST_COLUMN_HEADER,
-            SECOND_COLUMN_HEADER,
-            "",
-            firstColumnWidth + 1,
-            secondColumnWidth + 1,
-            0,
-            isAdoc
-        ));
-        if (!isAdoc) {
-            sb.append(PIPE)
-                .append("-".repeat(firstColumnWidth + 1))
-                .append(PIPE)
-                .append("-".repeat(secondColumnWidth + 1))
-                .append(PIPE_NEWLINE);
-        }
+        appendHeader(sb, FIRST_COLUMN_HEADER, SECOND_COLUMN_HEADER, firstColumnWidth, secondColumnWidth, isAdoc);
 
-        for (var entry : generalInfo.generalInfoMap().entrySet()) {
-            sb.append(getFormattedString(
-                entry.getKey(),
-                String.valueOf(entry.getValue()),
-                "",
-                firstColumnWidth + 1,
-                secondColumnWidth + 1,
-                0,
-                isAdoc
-            ));
-        }
+        populateTable(sb, generalInfo, firstColumnWidth, secondColumnWidth, 0, isAdoc);
 
         return sb.toString();
     }
@@ -68,31 +38,202 @@ public class DefaultRenderer {
             return "";
         }
 
-        final String FIRST_COLUMN_HEADER = "*RESOURCE*";
-        final String SECOND_COLUMN_HEADER = COUNT;
+        var sb = new StringBuilder();
+
+        int firstColumnWidth = calculateFirstColumnWidth(resources);
+        int secondColumnWidth = calculateValuesColumnWidth(resources);
+
+        firstColumnWidth = Math.max(firstColumnWidth, RESOURCES_FIRST_COLUMN_HEADER.length());
+        secondColumnWidth = Math.max(secondColumnWidth, RESOURCES_SECOND_COLUMN_HEADER.length());
+
+        appendHeader(
+            sb,
+            RESOURCES_FIRST_COLUMN_HEADER,
+            RESOURCES_SECOND_COLUMN_HEADER,
+            firstColumnWidth,
+            secondColumnWidth,
+            isAdoc
+        );
+
+        populateTable(sb, resources, firstColumnWidth, secondColumnWidth, 0, isAdoc);
+
+        return sb.toString();
+    }
+
+    public static String renderStatusCodes(StatusCodes statusCodes, boolean isAdoc) {
+        if (statusCodes.statusCodeMap().isEmpty()) {
+            return "";
+        }
 
         var sb = new StringBuilder();
-        int firstColumnWidth = resources.resourcesMap()
+
+        int firstColumnWidth = STATUS_CODES_FIRST_COLUMN_HEADER.length();
+        int secondColumnWidth = statusCodes.statusCodeMap()
             .keySet()
             .stream()
+            .map(HttpStatus::getStatusText)
             .max(Comparator.comparing(String::length))
             .orElse("")
             .length();
+        int thirdColumnWidth = calculateValuesColumnWidth(statusCodes);
 
-        int secondColumnWidth = resources.resourcesMap()
-            .values()
-            .stream()
-            .map(String::valueOf)
-            .max(Comparator.comparing(String::length))
-            .orElse("")
-            .length();
+        secondColumnWidth = Math.max(secondColumnWidth, STATUS_CODES_SECOND_COLUMN_HEADER.length());
+        thirdColumnWidth = Math.max(thirdColumnWidth, STATUS_CODES_THIRD_COLUMN_HEADER.length());
 
-        firstColumnWidth = Math.max(firstColumnWidth, FIRST_COLUMN_HEADER.length());
-        secondColumnWidth = Math.max(secondColumnWidth, SECOND_COLUMN_HEADER.length());
+        appendWideHeader(
+            sb,
+            STATUS_CODES_FIRST_COLUMN_HEADER,
+            STATUS_CODES_SECOND_COLUMN_HEADER,
+            STATUS_CODES_THIRD_COLUMN_HEADER,
+            firstColumnWidth,
+            secondColumnWidth,
+            thirdColumnWidth,
+            isAdoc
+        );
 
+        populateTable(sb, statusCodes, firstColumnWidth, secondColumnWidth, thirdColumnWidth, isAdoc);
+
+        return sb.toString();
+    }
+
+    public static String renderRemoteAddrs(RemoteAddresses remoteAddresses, boolean isAdoc) {
+        if (remoteAddresses.remoteAddrsMap().isEmpty()) {
+            return "";
+        }
+
+        var sb = new StringBuilder();
+
+        int firstColumnWidth = calculateFirstColumnWidth(remoteAddresses);
+        int secondColumnWidth = calculateValuesColumnWidth(remoteAddresses);
+
+        firstColumnWidth = Math.max(firstColumnWidth, REMOTE_ADDR_FIRST_COLUMN_HEADER.length());
+        secondColumnWidth = Math.max(secondColumnWidth, REMOTE_ADDR_SECOND_COLUMN_HEADER.length());
+
+        appendHeader(
+            sb,
+            REMOTE_ADDR_FIRST_COLUMN_HEADER,
+            REMOTE_ADDR_SECOND_COLUMN_HEADER,
+            firstColumnWidth,
+            secondColumnWidth,
+            isAdoc
+        );
+
+        populateTable(sb, remoteAddresses, firstColumnWidth, secondColumnWidth, 0, isAdoc);
+
+        return sb.toString();
+    }
+
+    public static String renderUserAgents(UserAgents userAgents, boolean isAdoc) {
+        if (userAgents.userAgentsMap().isEmpty()) {
+            return "";
+        }
+
+        var sb = new StringBuilder();
+
+        int firstColumnWidth = calculateFirstColumnWidth(userAgents);
+        int secondColumnWidth = calculateValuesColumnWidth(userAgents);
+
+        firstColumnWidth = Math.max(firstColumnWidth, USER_AGENTS_FIRST_COLUMN_HEADER.length());
+        secondColumnWidth = Math.max(secondColumnWidth, USER_AGENTS_SECOND_COLUMN_HEADER.length());
+
+        appendHeader(
+            sb,
+            USER_AGENTS_FIRST_COLUMN_HEADER,
+            USER_AGENTS_SECOND_COLUMN_HEADER,
+            firstColumnWidth,
+            secondColumnWidth,
+            isAdoc
+        );
+
+        populateTable(sb, userAgents, firstColumnWidth, secondColumnWidth, 0, isAdoc);
+
+        return sb.toString();
+    }
+
+    private static int calculateFirstColumnWidth(Record info) {
+
+        return switch (info) {
+            case GeneralInfo generalInfo -> generalInfo.generalInfoMap()
+                .keySet()
+                .stream()
+                .max(Comparator.comparing(String::length))
+                .orElse("")
+                .length();
+            case Resources resources -> resources.resourcesMap()
+                .keySet()
+                .stream()
+                .max(Comparator.comparing(String::length))
+                .orElse("")
+                .length();
+            case RemoteAddresses addrs -> addrs.remoteAddrsMap()
+                .keySet()
+                .stream()
+                .max(Comparator.comparing(String::length))
+                .orElse("")
+                .length();
+            case UserAgents agents -> agents.userAgentsMap()
+                .keySet()
+                .stream()
+                .max(Comparator.comparing(String::length))
+                .orElse("")
+                .length();
+            default -> 0;
+        };
+    }
+
+    private static int calculateValuesColumnWidth(Record info) {
+
+        return switch (info) {
+            case GeneralInfo generalInfo -> generalInfo.generalInfoMap()
+                .values()
+                .stream()
+                .map(String::valueOf)
+                .max(Comparator.comparing(String::length))
+                .orElse("")
+                .length();
+            case Resources resources -> resources.resourcesMap()
+                .values()
+                .stream()
+                .map(String::valueOf)
+                .max(Comparator.comparing(String::length))
+                .orElse("")
+                .length();
+            case RemoteAddresses addrs -> addrs.remoteAddrsMap()
+                .values()
+                .stream()
+                .map(String::valueOf)
+                .max(Comparator.comparing(String::length))
+                .orElse("")
+                .length();
+            case UserAgents agents -> agents.userAgentsMap()
+                .values()
+                .stream()
+                .map(String::valueOf)
+                .max(Comparator.comparing(String::length))
+                .orElse("")
+                .length();
+            case StatusCodes statusCodes -> statusCodes.statusCodeMap()
+                .values()
+                .stream()
+                .map(String::valueOf)
+                .max(Comparator.comparing(String::length))
+                .orElse("")
+                .length();
+            default -> 0;
+        };
+    }
+
+    private static void appendHeader(
+        StringBuilder sb,
+        String firstCol,
+        String secondCol,
+        int firstColumnWidth,
+        int secondColumnWidth,
+        boolean isAdoc
+    ) {
         sb.append(getFormattedString(
-            FIRST_COLUMN_HEADER,
-            SECOND_COLUMN_HEADER,
+            firstCol,
+            secondCol,
             "",
             firstColumnWidth + 1,
             secondColumnWidth + 1,
@@ -107,56 +248,23 @@ public class DefaultRenderer {
                 .append("-".repeat(secondColumnWidth + 1))
                 .append(PIPE_NEWLINE);
         }
-
-        for (var entry : resources.resourcesMap().entrySet()) {
-            sb.append(getFormattedString(
-                entry.getKey(),
-                String.valueOf(entry.getValue()),
-                "",
-                firstColumnWidth + 1,
-                secondColumnWidth + 1,
-                0,
-                isAdoc
-            ));
-        }
-
-        return sb.toString();
     }
 
-    public static String renderStatusCodes(StatusCodes statusCodes, boolean isAdoc) {
-        if (statusCodes.statusCodeMap().isEmpty()) {
-            return "";
-        }
-
-        final String FIRST_COLUMN_HEADER = "*STATUS CODE*";
-        final String SECOND_COLUMN_HEADER = "*DESCRIPTION*";
-        final String THIRD_COLUMN_HEADER = COUNT;
-
-        var sb = new StringBuilder();
-
-        int firstColumnWidth = FIRST_COLUMN_HEADER.length();
-        int secondColumnWidth = statusCodes.statusCodeMap()
-            .keySet()
-            .stream()
-            .map(HttpStatus::getStatusText)
-            .max(Comparator.comparing(String::length))
-            .orElse("")
-            .length();
-        int thirdColumnWidth = statusCodes.statusCodeMap()
-            .values()
-            .stream()
-            .map(String::valueOf)
-            .max(Comparator.comparing(String::length))
-            .orElse("")
-            .length();
-
-        secondColumnWidth = Math.max(secondColumnWidth, SECOND_COLUMN_HEADER.length());
-        thirdColumnWidth = Math.max(thirdColumnWidth, THIRD_COLUMN_HEADER.length());
-
+    @SuppressWarnings("ParameterNumber")
+    private static void appendWideHeader(
+        StringBuilder sb,
+        String firstCol,
+        String secondCol,
+        String thirdCol,
+        int firstColumnWidth,
+        int secondColumnWidth,
+        int thirdColumnWidth,
+        boolean isAdoc
+    ) {
         sb.append(getFormattedString(
-            FIRST_COLUMN_HEADER,
-            SECOND_COLUMN_HEADER,
-            THIRD_COLUMN_HEADER,
+            firstCol,
+            secondCol,
+            thirdCol,
             firstColumnWidth,
             secondColumnWidth,
             thirdColumnWidth,
@@ -171,140 +279,84 @@ public class DefaultRenderer {
                 .append(PIPE).append("-".repeat(thirdColumnWidth))
                 .append(PIPE_NEWLINE);
         }
-
-        for (var entry : statusCodes.statusCodeMap().entrySet()) {
-            sb.append(getFormattedString(
-                String.valueOf(entry.getKey()),
-                HttpStatus.getStatusText(entry.getKey()),
-                String.valueOf(entry.getValue()),
-                firstColumnWidth,
-                secondColumnWidth,
-                thirdColumnWidth,
-                isAdoc
-            ));
-        }
-
-        return sb.toString();
     }
 
-    public static String renderRemoteAddrs(RemoteAddresses remoteAddresses, boolean isAdoc) {
-        if (remoteAddresses.remoteAddrsMap().isEmpty()) {
-            return "";
+    private static void populateTable(
+        StringBuilder sb,
+        Record info,
+        int firstColumnWidth,
+        int secondColumnWidth,
+        int thirdColumnWidth,
+        boolean isAdoc
+    ) {
+        switch (info) {
+            case GeneralInfo generalInfo -> {
+                for (var entry : generalInfo.generalInfoMap().entrySet()) {
+                    sb.append(getFormattedString(
+                        entry.getKey(),
+                        String.valueOf(entry.getValue()),
+                        "",
+                        firstColumnWidth + 1,
+                        secondColumnWidth + 1,
+                        0,
+                        isAdoc
+                    ));
+                }
+            }
+            case Resources resources -> {
+                for (var entry : resources.resourcesMap().entrySet()) {
+                    sb.append(getFormattedString(
+                        entry.getKey(),
+                        String.valueOf(entry.getValue()),
+                        "",
+                        firstColumnWidth + 1,
+                        secondColumnWidth + 1,
+                        0,
+                        isAdoc
+                    ));
+                }
+            }
+            case RemoteAddresses addrs -> {
+                for (var entry : addrs.remoteAddrsMap().entrySet()) {
+                    sb.append(getFormattedString(
+                        entry.getKey().trim(),
+                        String.valueOf(entry.getValue()),
+                        "",
+                        firstColumnWidth + 1,
+                        secondColumnWidth + 1,
+                        0,
+                        isAdoc
+                    ));
+                }
+            }
+            case UserAgents agents -> {
+                for (var entry : agents.userAgentsMap().entrySet()) {
+                    sb.append(getFormattedString(
+                        entry.getKey(),
+                        String.valueOf(entry.getValue()),
+                        "",
+                        firstColumnWidth + 1,
+                        secondColumnWidth + 1,
+                        0,
+                        isAdoc
+                    ));
+                }
+            }
+            case StatusCodes codes -> {
+                for (var entry : codes.statusCodeMap().entrySet()) {
+                    sb.append(getFormattedString(
+                        String.valueOf(entry.getKey()),
+                        HttpStatus.getStatusText(entry.getKey()),
+                        String.valueOf(entry.getValue()),
+                        firstColumnWidth,
+                        secondColumnWidth,
+                        thirdColumnWidth,
+                        isAdoc
+                    ));
+                }
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + info);
         }
-
-        final String FIRST_COLUMN_HEADER = "*REMOTE ADDRESS*";
-        final String SECOND_COLUMN_HEADER = COUNT;
-
-        var sb = new StringBuilder();
-        int firstColumnWidth = remoteAddresses.remoteAddrsMap()
-            .keySet()
-            .stream()
-            .max(Comparator.comparing(String::length))
-            .orElse("")
-            .length();
-
-        int secondColumnWidth = remoteAddresses.remoteAddrsMap()
-            .values()
-            .stream()
-            .map(String::valueOf)
-            .max(Comparator.comparing(String::length))
-            .orElse("")
-            .length();
-
-        firstColumnWidth = Math.max(firstColumnWidth, FIRST_COLUMN_HEADER.length());
-        secondColumnWidth = Math.max(secondColumnWidth, SECOND_COLUMN_HEADER.length());
-
-        sb.append(getFormattedString(
-            FIRST_COLUMN_HEADER,
-            SECOND_COLUMN_HEADER,
-            "",
-            firstColumnWidth + 1,
-            secondColumnWidth + 1,
-            0,
-            isAdoc
-        ));
-
-        if (!isAdoc) {
-            sb.append(PIPE)
-                .append("-".repeat(firstColumnWidth + 1))
-                .append(PIPE)
-                .append("-".repeat(secondColumnWidth + 1))
-                .append(PIPE_NEWLINE);
-        }
-
-        for (var entry : remoteAddresses.remoteAddrsMap().entrySet()) {
-            sb.append(getFormattedString(
-                entry.getKey().trim(),
-                String.valueOf(entry.getValue()),
-                "",
-                firstColumnWidth + 1,
-                secondColumnWidth + 1,
-                0,
-                isAdoc
-            ));
-        }
-
-        return sb.toString();
-    }
-
-    public static String renderUserAgents(UserAgents userAgents, boolean isAdoc) {
-        if (userAgents.userAgentsMap().isEmpty()) {
-            return "";
-        }
-
-        final String FIRST_COLUMN_HEADER = "*USER AGENT*";
-        final String SECOND_COLUMN_HEADER = COUNT;
-
-        var sb = new StringBuilder();
-        int firstColumnWidth = userAgents.userAgentsMap()
-            .keySet()
-            .stream()
-            .max(Comparator.comparing(String::length))
-            .orElse("")
-            .length();
-
-        int secondColumnWidth = userAgents.userAgentsMap()
-            .values()
-            .stream()
-            .map(String::valueOf)
-            .max(Comparator.comparing(String::length))
-            .orElse("")
-            .length();
-
-        firstColumnWidth = Math.max(firstColumnWidth, FIRST_COLUMN_HEADER.length());
-        secondColumnWidth = Math.max(secondColumnWidth, SECOND_COLUMN_HEADER.length());
-
-        sb.append(getFormattedString(
-            FIRST_COLUMN_HEADER,
-            SECOND_COLUMN_HEADER,
-            "",
-            firstColumnWidth + 1,
-            secondColumnWidth + 1,
-            0,
-            isAdoc
-        ));
-
-        if (!isAdoc) {
-            sb.append(PIPE)
-                .append("-".repeat(firstColumnWidth + 1))
-                .append(PIPE)
-                .append("-".repeat(secondColumnWidth + 1))
-                .append(PIPE_NEWLINE);
-        }
-
-        for (var entry : userAgents.userAgentsMap().entrySet()) {
-            sb.append(getFormattedString(
-                entry.getKey(),
-                String.valueOf(entry.getValue()),
-                "",
-                firstColumnWidth + 1,
-                secondColumnWidth + 1,
-                0,
-                isAdoc
-            ));
-        }
-
-        return sb.toString();
     }
 
     private static String getFormattedString(
@@ -323,27 +375,28 @@ public class DefaultRenderer {
             rightBorder = "\n";
         }
 
+        StringBuilder sb = new StringBuilder();
         if (thirdColumnWidth == 0) {
-            return PIPE
-                + firstColumnItem
-                + firstColumnTabulation
-                + PIPE
-                + secondColumnTabulation
-                + secondColumnItem
-                +
-                rightBorder;
+            sb.append(PIPE)
+                .append(firstColumnItem)
+                .append(firstColumnTabulation)
+                .append(PIPE)
+                .append(secondColumnTabulation)
+                .append(secondColumnItem)
+                .append(rightBorder);
         } else {
-            return PIPE
-                +
-                firstColumnItem
-                + firstColumnTabulation
-                + PIPE
-                + secondColumnTabulation
-                + secondColumnItem
-                + PIPE
-                + " ".repeat(thirdColumnWidth - thirdColumnItem.length())
-                + thirdColumnItem
-                + rightBorder;
+            sb.append(PIPE)
+                .append(firstColumnItem)
+                .append(firstColumnTabulation)
+                .append(PIPE)
+                .append(secondColumnTabulation)
+                .append(secondColumnItem)
+                .append(PIPE)
+                .append(" ".repeat(thirdColumnWidth - thirdColumnItem.length()))
+                .append(thirdColumnItem)
+                .append(rightBorder);
         }
+
+        return sb.toString();
     }
 }
