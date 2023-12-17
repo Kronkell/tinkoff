@@ -9,10 +9,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import edu.hw10.Task1.Max;
-import edu.hw10.Task1.Min;
-import edu.hw10.Task1.NotNull;
 
+@SuppressWarnings({"MultipleStringLiterals", "CyclomaticComplexity", "ReturnCount"})
 public class RandomObjectGenerator {
     private static final String INTEGER = "Integer";
     private static final String DOUBLE = "Double";
@@ -50,47 +48,46 @@ public class RandomObjectGenerator {
         return null;
     }
 
-    Object getRandomObject(Class<?> obj, boolean isNotNull, boolean isMax, boolean isMin) {
+    Object getRandomObject(Class<?> obj, Annotation[] annotations) {
         int idx = ThreadLocalRandom.current().nextInt(2);
         Object object = null;
+        long min = Long.MIN_VALUE;
+        long max = Long.MAX_VALUE;
+        boolean isNotNull = false;
+        boolean isMinSet = false;
+        boolean isMaxSet = false;
+
+        for (Annotation annotation : annotations) {
+            if (annotation instanceof Min) {
+                min = ((Min) annotation).value();
+                isMinSet = true;
+            }
+            if (annotation instanceof Max) {
+                max = ((Max) annotation).value();
+                isMaxSet = true;
+            }
+            if (annotation instanceof NotNull) {
+                isNotNull = true;
+            }
+        }
 
         if (isNotNull) {
             object = switch (obj.getSimpleName()) {
                 case INTEGER -> ThreadLocalRandom.current().nextInt(Integer.MIN_VALUE, Integer.MAX_VALUE);
-                case STRING -> getRandomString(true, isMax, isMin);
+                case STRING -> getRandomString(true, false, false);
                 case DOUBLE -> ThreadLocalRandom.current().nextDouble(Double.MIN_VALUE, Double.MAX_VALUE);
                 case CHAR -> (char) ThreadLocalRandom.current().nextInt(CHAR_MIN, CHAR_MAX);
                 case LONG -> ThreadLocalRandom.current().nextLong(Long.MIN_VALUE, Long.MAX_VALUE);
                 case BOOLEAN -> ThreadLocalRandom.current().nextBoolean();
                 default -> throw new IllegalStateException("Unexpected value: " + obj.getSimpleName());
             };
-        } else if (isMax) {
+        } else if (isMinSet || isMaxSet || idx == 1) {
             object = switch (obj.getSimpleName()) {
-                case INTEGER -> Integer.MAX_VALUE;
-                case STRING -> getRandomString(false, true, isMin);
-                case DOUBLE -> Double.MAX_VALUE;
-                case CHAR -> (char) CHAR_MAX;
-                case LONG -> Long.MAX_VALUE;
-                case BOOLEAN -> true;
-                default -> throw new IllegalStateException("Unexpected value: " + obj.getSimpleName());
-            };
-        } else if (isMin) {
-            object = switch (obj.getSimpleName()) {
-                case INTEGER -> Integer.MIN_VALUE;
-                case STRING -> getRandomString(false, false, true);
-                case DOUBLE -> Double.MIN_VALUE;
-                case CHAR -> (char) CHAR_MIN;
-                case LONG -> Long.MIN_VALUE;
-                case BOOLEAN -> false;
-                default -> throw new IllegalStateException("Unexpected value: " + obj.getSimpleName());
-            };
-        } else if (idx == 0) {
-            object = switch (obj.getSimpleName()) {
-                case INTEGER -> ThreadLocalRandom.current().nextInt(Integer.MIN_VALUE, Integer.MAX_VALUE);
+                case INTEGER -> ThreadLocalRandom.current().nextInt((int) min, (int) max);
                 case STRING -> getRandomString(false, false, false);
-                case DOUBLE -> ThreadLocalRandom.current().nextDouble(Double.MIN_VALUE, Double.MAX_VALUE);
+                case DOUBLE -> ThreadLocalRandom.current().nextDouble(min, max);
                 case CHAR -> (char) ThreadLocalRandom.current().nextInt(CHAR_MIN, CHAR_MAX);
-                case LONG -> ThreadLocalRandom.current().nextLong(Long.MIN_VALUE, Long.MAX_VALUE);
+                case LONG -> ThreadLocalRandom.current().nextLong(min, max);
                 case BOOLEAN -> ThreadLocalRandom.current().nextBoolean();
                 default -> throw new IllegalStateException("Unexpected value: " + obj.getSimpleName());
             };
@@ -107,12 +104,12 @@ public class RandomObjectGenerator {
             .get();
 
         List<Object> initArgs = getInitArgs(constructor.getParameterTypes(), constructor.getParameterAnnotations());
-
+        constructor.setAccessible(true);
         return constructor.newInstance(initArgs.toArray());
     }
 
     public Object nextObject(Class<?> clazz, String fabricMethodName)
-        throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
+        throws InvocationTargetException, IllegalAccessException, InstantiationException {
 
         Method fabricMethod = Arrays.stream(clazz.getDeclaredMethods())
             .filter(m -> m.getName().equals(fabricMethodName))
@@ -127,6 +124,8 @@ public class RandomObjectGenerator {
             getInitArgs(constructor.getParameterTypes(), constructor.getParameterAnnotations());
 
         List<Object> initArgs = getInitArgs(fabricMethod.getParameterTypes(), fabricMethod.getParameterAnnotations());
+        constructor.setAccessible(true);
+        fabricMethod.setAccessible(true);
 
         return fabricMethod.invoke(constructor.newInstance(constructInitArgs.toArray()), initArgs.toArray());
     }
@@ -136,17 +135,19 @@ public class RandomObjectGenerator {
 
         for (int i = 0; i < parameterTypes.length; ++i) {
             Annotation[] annotations = parameterAnnotations[i];
-            if (annotations.length == 0) {
-                initArgs.add(getRandomObject(parameterTypes[i], false, false, false));
-            } else {
-                Annotation annotation = annotations[0];
+            initArgs.add(getRandomObject(parameterTypes[i], annotations));
 
-                boolean isNotNull = annotation instanceof NotNull;
-                boolean isMax = annotation instanceof Max;
-                boolean isMin = annotation instanceof Min;
-
-                initArgs.add(getRandomObject(parameterTypes[i], isNotNull, isMax, isMin));
-            }
+//            if (annotations.length == 0) {
+//                initArgs.add(getRandomObject(parameterTypes[i], false, false, false));
+//            } else {
+//                Annotation annotation = annotations[0];
+//
+//                boolean isNotNull = annotation instanceof NotNull;
+//                boolean isMax = annotation instanceof Max;
+//                boolean isMin = annotation instanceof Min;
+//
+//                initArgs.add(getRandomObject(parameterTypes[i], isNotNull, isMax, isMin));
+//            }
         }
 
         return initArgs;

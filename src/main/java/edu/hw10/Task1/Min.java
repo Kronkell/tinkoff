@@ -8,4 +8,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
 public @interface Min {
+    long value() default Long.MIN_VALUE;
 }
