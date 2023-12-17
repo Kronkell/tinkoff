@@ -3,7 +3,9 @@ package edu.hw11;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.agent.ByteBuddyAgent;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
+import net.bytebuddy.dynamic.loading.ClassReloadingStrategy;
 import net.bytebuddy.dynamic.scaffold.InstrumentedType;
 import net.bytebuddy.implementation.FixedValue;
 import net.bytebuddy.implementation.Implementation;
@@ -35,12 +37,13 @@ public class Hw11Tests {
     @Test
     public void task2Test()
         throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        ByteBuddyAgent.install();
         Class<?> dynamicType = new ByteBuddy()
             .redefine(ArithmeticUtils.class)
             .method(named("sum"))
             .intercept(MethodDelegation.to(NewArithmeticUtils.class))
             .make()
-            .load(getClass().getClassLoader())
+            .load(getClass().getClassLoader(), ClassReloadingStrategy.fromInstalledAgent())
             .getLoaded();
 
         final int a = 5;

@@ -178,6 +178,9 @@
                     <configuration>
                         <excludes>
                             <exclude>edu/hw11/Hw11Tests/**</exclude>
+                            <exclude>edu/hw11/Hw11Tests</exclude>
+                            <exclude>**/edu/hw11/Hw11Tests/**</exclude>
+                            <exclude>**/edu/hw11/Hw11Tests</exclude>
                         </excludes>
                     </configuration>
                     <version>${jacoco-maven-plugin.version}</version>
