@@ -1,6 +1,4 @@
-package edu.project4.Transformations;
-
-import edu.project4.FractalFlameApp;
+package edu.project4;
 
 public class Main {
     private Main() {

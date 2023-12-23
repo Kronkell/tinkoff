@@ -25,6 +25,9 @@ public record Cosine(Color color, double weight) implements Transformation {
         double x = point.x();
         double y = point.y();
 
-        return new Point(cos(PI * x) * cosh(y), -sin(PI * x) * sinh(y));
+        double newX = cos(PI * x) * cosh(y);
+        double newY = -sin(PI * x) * sinh(y);
+
+        return new Point(newX, newY);
     }
 }

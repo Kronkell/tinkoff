@@ -12,7 +12,10 @@ public record Sphere(Color color, double weight) implements Transformation {
 
         double r = x * x + y * y;
 
-        return new Point(x / r, y / r);
+        double newX = x / r;
+        double newY = y / r;
+
+        return new Point(newX, newY);
     }
 
     @Override

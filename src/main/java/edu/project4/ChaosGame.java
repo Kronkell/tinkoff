@@ -27,7 +27,7 @@ public class ChaosGame {
     private static final int MULT_LOW_BOUND = -2;
     private static final double GAMMA = 2.2;
 
-    static private void render(
+    static public void render(
         FractalImage canvas,
         List<AffineTransformation> affineTransformations,
         List<? extends Transformation> variations,
@@ -65,9 +65,6 @@ public class ChaosGame {
             }
 
             p = new Point(newX, newY);
-
-            /*affineTransformIndex = ThreadLocalRandom.current().nextInt(affineTransformations.size());
-            p = affineTransformations.get(affineTransformIndex).apply(p);*/
 
             if (i >= 0) {
                 double theta = 0.0;
@@ -140,7 +137,7 @@ public class ChaosGame {
         }
     }
 
-    private static AffineTransformation randomAffineTransformation() {
+    public static AffineTransformation randomAffineTransformation() {
 
         boolean isRight = false;
         double a = 0;
@@ -195,7 +192,7 @@ public class ChaosGame {
 
         long then = System.nanoTime();
         int iterNumber = 10;
-        int n = 100_000_000;
+        int n = 1000;
         int symmetry = 1;
 
         ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());

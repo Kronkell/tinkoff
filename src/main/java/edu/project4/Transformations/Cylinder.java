@@ -21,6 +21,9 @@ public record Cylinder(Color color, double weight) implements Transformation {
         double x = point.x();
         double y = point.y();
 
-        return new Point(sin(x), y);
+        double newX = sin(x);
+        double newY = y;
+
+        return new Point(newX, newY);
     }
 }

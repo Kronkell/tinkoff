@@ -8,7 +8,10 @@ import static java.lang.Math.sin;
 public record Sinus(Color color, double weight) implements Transformation {
     @Override
     public Point apply(Point point) {
-        return new Point(sin(point.x()), sin(point.y()));
+        double newX = sin(point.x());
+        double newY = sin(point.y());
+
+        return new Point(newX, newY);
     }
 
     @Override

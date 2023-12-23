@@ -10,6 +10,8 @@ import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @SuppressWarnings({"MemberName", "RegexpSinglelineJava"})
 public class FractalFlameApp {
@@ -19,14 +21,15 @@ public class FractalFlameApp {
         + "resolutions in format: dddd*dddd";
 
     private final String GENERATING = "Generating fractal flame...";
-    private final int ONE = 1;
-    private final int TWO = 2;
-    private final int THREE = 3;
-    private final int FOUR = 4;
-    private final int FIVE = 5;
+    private final int HEART = 1;
+    private final int EYEFISH = 2;
+    private final int SWIRL = 3;
+    private final int HANDKERCHIEF = 4;
+    private final int CYLINDER = 5;
 
     public void run() {
         boolean isCompleted = false;
+        Logger logger = LogManager.getLogger();
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             while (!isCompleted) {
@@ -35,11 +38,11 @@ public class FractalFlameApp {
                     String transformationChoice = reader.readLine();
 
                     Transformation transformation = switch (Integer.parseInt(transformationChoice)) {
-                        case ONE -> new Heart(Color.WHITE, 1);
-                        case TWO -> new Eyefish(Color.WHITE, 1);
-                        case THREE -> new Swirl(Color.WHITE, 1);
-                        case FOUR -> new Handkerchief(Color.WHITE, 1);
-                        case FIVE -> new Cylinder(Color.WHITE, 1);
+                        case HEART -> new Heart(Color.WHITE, 1);
+                        case EYEFISH -> new Eyefish(Color.WHITE, 1);
+                        case SWIRL -> new Swirl(Color.WHITE, 1);
+                        case HANDKERCHIEF -> new Handkerchief(Color.WHITE, 1);
+                        case CYLINDER -> new Cylinder(Color.WHITE, 1);
                         default -> new Blur(Color.WHITE, 1);
                     };
 
@@ -59,7 +62,7 @@ public class FractalFlameApp {
                 }
             }
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            logger.error(e.getMessage());
         }
 
     }

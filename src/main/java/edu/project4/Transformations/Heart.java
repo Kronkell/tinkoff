@@ -26,6 +26,9 @@ public record Heart(Color color, double weight) implements Transformation {
         double theta = Math.atan(x / y);
         double r = sqrt(x * x + y * y);
 
-        return new Point(r * sin(theta * r), -r * cos(-theta * r));
+        double newX = r * sin(theta * r);
+        double newY = -r * cos(-theta * r);
+
+        return new Point(newX, newY);
     }
 }

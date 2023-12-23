@@ -14,7 +14,10 @@ public record Swirl(Color color, double weight) implements Transformation {
 
         double r = x * x + y * y;
 
-        return new Point(x * sin(r) - y * cos(r), x * cos(r) + y * sin(r));
+        double newX = x * sin(r) - y * cos(r);
+        double newY = x * cos(r) + y * sin(r);
+
+        return new Point(newX, newY);
     }
 
     @Override

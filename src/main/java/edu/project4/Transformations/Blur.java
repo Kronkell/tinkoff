@@ -23,6 +23,9 @@ public record Blur(Color color, double weight) implements Transformation {
         double psi1 = ThreadLocalRandom.current().nextDouble();
         double psi2 = ThreadLocalRandom.current().nextDouble();
 
-        return new Point(psi1 * cos(2 * Math.PI * psi2), psi1 * sin(2 * Math.PI * psi2));
+        double newX = psi1 * cos(2 * Math.PI * psi2);
+        double newY = psi1 * sin(2 * Math.PI * psi2);
+
+        return new Point(newX, newY);
     }
 }

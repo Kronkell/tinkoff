@@ -26,6 +26,9 @@ public record Spiral(Color color, double weight) implements Transformation {
         double theta = Math.atan(x / y);
         double r = sqrt(x * x + y * y);
 
-        return new Point(1 / r * (cos(theta) + sin(r)), 1 / r * (sin(theta) - cos(r)));
+        double newX = 1 / r * (cos(theta) + sin(r));
+        double newY = 1 / r * (sin(theta) - cos(r));
+
+        return new Point(newX, newY);
     }
 }

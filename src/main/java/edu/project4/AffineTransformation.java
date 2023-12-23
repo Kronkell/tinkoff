@@ -19,7 +19,10 @@ public record AffineTransformation(
         double x = point.x();
         double y = point.y();
 
-        return new Point(a * x + b * y + c, d * x + e * y + f);
+        double newX = a * x + b * y + c;
+        double newY = d * x + e * y + f;
+
+        return new Point(newX, newY);
     }
 
     @Override

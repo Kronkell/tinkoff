@@ -23,6 +23,9 @@ public record Eyefish(Color color, double weight) implements Transformation {
 
         double r = sqrt(x * x + y * y);
 
-        return new Point(2.0 / (r + 1) * x, 2.0 / (r + 1) * y);
+        double newX = 2.0 / (r + 1) * x;
+        double newY = 2.0 / (r + 1) * y;
+
+        return new Point(newX, newY);
     }
 }

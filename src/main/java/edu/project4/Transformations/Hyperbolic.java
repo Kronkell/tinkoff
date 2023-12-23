@@ -26,6 +26,9 @@ public record Hyperbolic(Color color, double weight) implements Transformation {
         double theta = Math.atan(x / y);
         double r = sqrt(x * x + y * y);
 
-        return new Point(sin(theta) / r, r * cos(theta));
+        double newX = sin(theta) / r;
+        double newY = r * cos(theta);
+
+        return new Point(newX, newY);
     }
 }
