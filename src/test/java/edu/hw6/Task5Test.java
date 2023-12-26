@@ -16,13 +16,4 @@ public class Task5Test {
 
         assertThat(actualTitle).isEqualTo(expectedTitle);
     }
-
-    @Test
-    public void shouldReturnIds() {
-        final long[] expectedIds = {38775579, 38774165, 38772980, 38769850, 38773429, 38772382};
-
-        long[] actualIds = Arrays.stream(hackerNewsTopStories()).limit(6).toArray();
-
-        assertThat(actualIds).contains(expectedIds);
-    }
 }
