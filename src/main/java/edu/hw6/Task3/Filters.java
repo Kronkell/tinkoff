@@ -18,7 +18,6 @@ public final class Filters {
     public static AbstractFilter writable = Files::isWritable;
 
     private Filters() {
-        throw new UnsupportedOperationException("This is a utility class");
     }
 
     public static DirectoryStream.Filter<Path> largerThan(int sizeBytes) {

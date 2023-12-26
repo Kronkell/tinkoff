@@ -25,7 +25,7 @@ public class Task4 {
                      new OutputStreamWriter(
                          new BufferedOutputStream(
                              new CheckedOutputStream(
-                                 Files.newOutputStream(Path.of("kekw.txt")), new CRC32()
+                                 Files.newOutputStream(Path.of("src/main/resources/hw6/chain.txt")), new CRC32()
                              )
                          ), StandardCharsets.UTF_8)
                  )

@@ -3,11 +3,29 @@ package edu.hw6;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import static java.util.Map.entry;
 
-@SuppressWarnings({"UncommentedMain", "RegexpSinglelineJava", "MagicNumber", "OperatorWrap", "LocalVariableName"})
+@SuppressWarnings({"RegexpSinglelineJava", "MagicNumber", "OperatorWrap", "LocalVariableName"})
 public class Task6 {
+    static final LinkedHashMap<Integer, String> PORT_INFO = new LinkedHashMap<>();
+
+    static {
+        PORT_INFO.put(22, "TCP, UDP, SCTP;SSH-SCP");
+        PORT_INFO.put(135, "TCP, UDP;Microsoft EPMAP");
+        PORT_INFO.put(137, "TCP, UDP;NetBIOS-ns");
+        PORT_INFO.put(139, "TCP, UDP;NetBIOS-ssn");
+        PORT_INFO.put(2177, "TCP, UDP;qWAVE Bandwidth Estimate");
+        PORT_INFO.put(4500, "TCP, UDP;IPsec NAT-Traversal");
+        PORT_INFO.put(5432, "TCP;PostgreSQL");
+        PORT_INFO.put(8100, "TCP, UDP;Xprint Server");
+        PORT_INFO.put(9300, "TCP, UDP;Virtual Racing Service");
+    }
+
+    static final String HEADER = "Protocol         Port   Service\n";
+    static final int FIRST_ROW_WIDTH = 17;
+    static final int SECOND_ROW_WIDTH = 7;
+
     private Task6() {
     }
 
@@ -19,45 +37,21 @@ public class Task6 {
         }
     }
 
-    public static void printSeveralPorts() {
-        final Map<Integer, String> PORT_INFO = Map.ofEntries(
-            entry(22, "TCP, UDP, SCTP;SSH-SCP"),
-            entry(135, "TCP, UDP;Microsoft EPMAP"),
-            entry(137, "TCP, UDP;NetBIOS-ns"),
-            entry(139, "TCP, UDP;NetBIOS-ssn"),
-            entry(2177, "TCP, UDP;qWAVE Bandwidth Estimate"),
-            entry(4500, "TCP, UDP;IPsec NAT-Traversal"),
-            entry(5432, "TCP;PostgreSQL"),
-            entry(8100, "TCP, UDP;Xprint Server"),
-            entry(9300, "TCP, UDP;Virtual Racing Service")
-        );
-        final String HEADER = "Protocol         Port   Service";
-        final int FIRST_ROW_WIDTH = 17;
-        final int SECOND_ROW_WIDTH = 7;
-
-        System.out.println(HEADER);
-        for (var k : PORT_INFO.entrySet()) {
+    public static String printSeveralPorts() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(HEADER);
+        for (Map.Entry<Integer, String> k : PORT_INFO.entrySet()) {
             if (!isAvailable(k.getKey())) {
                 var infoPair = k.getValue().split(";");
 
-                System.out.println(infoPair[0] + " ".repeat(FIRST_ROW_WIDTH - infoPair[0].length()) +
-                    k.getKey().toString() + " ".repeat(SECOND_ROW_WIDTH - k.getKey().toString().length()) +
-                    infoPair[1]);
+                sb.append(infoPair[0])
+                    .append(" ".repeat(FIRST_ROW_WIDTH - infoPair[0].length()))
+                    .append(k.getKey().toString()).append(" ".repeat(SECOND_ROW_WIDTH - k.getKey().toString().length()))
+                    .append(infoPair[1])
+                    .append("\n");
             }
         }
 
-    }
-
-    public static void main(String[] args) {
-        int MIN_PORT = 0;
-        int MAX_PORT = 49151;
-
-        for (int i = MIN_PORT; i < MAX_PORT; ++i) {
-            if (!isAvailable(i)) {
-                System.out.println(i);
-            }
-        }
-
-        printSeveralPorts();
+        return sb.toString();
     }
 }

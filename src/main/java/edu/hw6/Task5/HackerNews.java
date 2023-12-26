@@ -7,17 +7,13 @@ import java.net.http.HttpResponse;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
-@SuppressWarnings({"UncommentedMain", "RegexpSinglelineJava", "MagicNumber"})
+@SuppressWarnings({"RegexpSinglelineJava", "MagicNumber"})
 public class HackerNews {
     private HackerNews() {
     }
 
-
-    public static void main(String[] args) {
-        System.out.println(Arrays.toString(hackerNewsTopStories()));
-        String newsTitle = news(38309611);
-        System.out.println(newsTitle);
-    }
+    private static final String URL = "https://hacker-news.firebaseio.com/v0/item/%d.json";
+    private static final String TITLE_REGEXP = "\"title\":\"([^\"]*)\"";
 
     public static long[] hackerNewsTopStories() {
         String topStoriesUrl = "https://hacker-news.firebaseio.com/v0/topstories.json";
@@ -41,7 +37,7 @@ public class HackerNews {
     }
 
     public static String news(long id) {
-        String newsURL = "https://hacker-news.firebaseio.com/v0/item/" + id + ".json";
+        String newsURL = String.format(URL, id);
         String title = "";
 
         try (HttpClient client = HttpClient.newHttpClient()) {
@@ -51,9 +47,8 @@ public class HackerNews {
                 .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            Pattern pattern = Pattern.compile("\"title\":\"([^\"]*)\"");
+            Pattern pattern = Pattern.compile(TITLE_REGEXP);
 
-            System.out.println(response.body());
             var matcher = pattern.matcher(response.body());
             if (matcher.find()) {
                 title = matcher.group(1);

@@ -2,15 +2,17 @@ package edu.hw6;
 
 import edu.hw6.Task1.DiskMap;
 import java.io.IOException;
+import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class Task1Test {
     static DiskMap diskMap;
+    static Path path = Path.of("diskmap.txt");
 
     static {
         try {
-            diskMap = new DiskMap();
+            diskMap = new DiskMap(path);
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }

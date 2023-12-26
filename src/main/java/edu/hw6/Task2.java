@@ -13,11 +13,11 @@ public class Task2 {
     public static void cloneFile(Path path) throws IOException {
         long countOfClones;
         String fileNameWithoutExt = path.getFileName().toString().replaceFirst("[.][^.]+$", "");
-        try (Stream<Path> walk = Files.walk(path.toAbsolutePath().getParent())) {
+        try (Stream<Path> foundFiles = Files.walk(path.toAbsolutePath().getParent())) {
             Pattern pattern = Pattern.compile(
                 Pattern.quote(fileNameWithoutExt) + " - копия( \\(\\d+\\))?\\.txt$");
 
-            countOfClones = walk
+            countOfClones = foundFiles
                 .filter(Files::isRegularFile)
                 .filter(file -> pattern.matcher(file.getFileName().toString()).matches())
                 .count();

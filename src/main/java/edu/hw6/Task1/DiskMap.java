@@ -5,24 +5,27 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.AbstractMap;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("RegexpSinglelineJava")
 public class DiskMap implements Map<String, String> {
-    private static final Path PATH = Path.of("disk-map.txt");
-
+    private final Path path;
     private int size;
 
-    public DiskMap() throws IOException {
-        if (!Files.exists(PATH)) {
-            Files.createFile(PATH);
+    public DiskMap(Path path) throws IOException {
+        this.path = path;
+        if (!Files.exists(path)) {
+            Files.createFile(path);
             size = 0;
         } else {
-            size = Files.readAllLines(PATH).size();
+            size = Files.readAllLines(path).size();
         }
     }
 
@@ -33,7 +36,7 @@ public class DiskMap implements Map<String, String> {
 
     @Override
     public boolean isEmpty() {
-        return size <= 0;
+        return size == 0;
     }
 
     @Override
@@ -41,7 +44,7 @@ public class DiskMap implements Map<String, String> {
         if (key == null) {
             throw new IllegalArgumentException();
         }
-        try (BufferedReader bufferedReader = Files.newBufferedReader(PATH)) {
+        try (BufferedReader bufferedReader = Files.newBufferedReader(path)) {
             String entry;
             String currentKey;
             String[] keyValPair;
@@ -68,7 +71,7 @@ public class DiskMap implements Map<String, String> {
         if (value == null) {
             throw new IllegalArgumentException();
         }
-        try (BufferedReader bufferedReader = Files.newBufferedReader(PATH)) {
+        try (BufferedReader bufferedReader = Files.newBufferedReader(path)) {
             String entry;
             String currentValue;
             String[] keyValPair;
@@ -96,7 +99,7 @@ public class DiskMap implements Map<String, String> {
             throw new IllegalArgumentException();
         }
         if (this.containsKey(key)) {
-            try (BufferedReader bufferedReader = Files.newBufferedReader(PATH)) {
+            try (BufferedReader bufferedReader = Files.newBufferedReader(path)) {
                 String entry;
                 String currentKey;
                 String value;
@@ -128,7 +131,7 @@ public class DiskMap implements Map<String, String> {
         if (key == null || key.isEmpty() || value == null || value.isEmpty()) {
             throw new IllegalArgumentException();
         }
-        try (RandomAccessFile file = new RandomAccessFile(PATH.toFile(), "rw")) {
+        try (RandomAccessFile file = new RandomAccessFile(path.toFile(), "rw")) {
             String currentLine;
             String currentKey;
             String currentValue;
@@ -161,7 +164,7 @@ public class DiskMap implements Map<String, String> {
     @Override
     public String remove(Object key) {
         String oldValue = null;
-        try (BufferedReader reader = Files.newBufferedReader(PATH)) {
+        try (BufferedReader reader = Files.newBufferedReader(path)) {
             String currentLine;
             String currentKey;
             String[] keyValPair;
@@ -181,7 +184,7 @@ public class DiskMap implements Map<String, String> {
                     size--;
                 }
             }
-            Files.write(PATH, fileContents.toString().getBytes());
+            Files.write(path, fileContents.toString().getBytes());
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -191,13 +194,15 @@ public class DiskMap implements Map<String, String> {
 
     @Override
     public void putAll(@NotNull Map<? extends String, ? extends String> m) {
-        throw new UnsupportedOperationException();
+        for (Map.Entry<? extends String, ? extends String> entry : m.entrySet()) {
+            put(entry.getKey(), entry.getValue());
+        }
     }
 
     @Override
     public void clear() {
         try {
-            Files.write(PATH, "".getBytes());
+            Files.write(path, "".getBytes());
             size = 0;
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -207,18 +212,37 @@ public class DiskMap implements Map<String, String> {
     @NotNull
     @Override
     public Set<String> keySet() {
-        throw new UnsupportedOperationException();
+        try (var linesForSet = Files.lines(path)) {
+            return linesForSet
+                .map(line -> line.split(":")[0])
+                .collect(Collectors.toSet());
+        } catch (IOException e) {
+            return Collections.emptySet();
+        }
     }
 
     @NotNull
     @Override
     public Collection<String> values() {
-        throw new UnsupportedOperationException();
+        try (var linesForSet = Files.lines(path)) {
+            return linesForSet
+                .map(line -> line.split(":")[1])
+                .collect(Collectors.toSet());
+        } catch (IOException e) {
+            return Collections.emptySet();
+        }
     }
 
     @NotNull
     @Override
     public Set<Entry<String, String>> entrySet() {
-        throw new UnsupportedOperationException();
+        try (var linesForSet = Files.lines(path)) {
+            return linesForSet
+                .map(line -> new AbstractMap
+                    .SimpleEntry<>(line.split(":")[0], line.split(":")[1]))
+                .collect(Collectors.toSet());
+        } catch (IOException e) {
+            return Collections.emptySet();
+        }
     }
 }
